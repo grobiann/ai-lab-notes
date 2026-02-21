@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const BASE = import.meta.env.BASE_URL;
+
+const techStack = [
+  { category: 'Languages',  items: ['Python', 'TypeScript', 'JavaScript', 'SQL'] },
+  { category: 'AI / ML',    items: ['PyTorch', 'Transformers', 'scikit-learn', 'NumPy'] },
+  { category: 'Backend',    items: ['FastAPI', 'Node.js', 'PostgreSQL', 'Redis'] },
+  { category: 'DevOps',     items: ['Docker', 'GitHub Actions', 'Linux'] },
+];
+---
+
+<BaseLayout title="About" description="grobiann에 대하여 — 기술 스택과 소개">
+
+  <div class="max-w-2xl mx-auto px-6 py-14">
+
+    <!-- Intro -->
+    <section class="mb-14 pb-12 border-b border-[#e8ddd0]">
+      <p class="text-xs font-semibold tracking-widest uppercase text-[#c07a2f] mb-4">About</p>
+      <h1 class="font-serif text-4xl font-bold tracking-tight text-[#1a1208] mb-6">안녕하세요 👋</h1>
+      <div class="space-y-4 text-[#7a6a52] text-base leading-relaxed">
+        <p>
+          저는 <strong class="text-[#2c2416] font-semibold">grobiann</strong>입니다.
+          AI와 백엔드 개발에 관심이 많으며, 배운 것을 기록하고 공유하는 것을 좋아합니다.
+        </p>
+        <p>
+          이 블로그는 제가 공부하면서 실험한 것들, 문제를 해결하며 배운 것들을 정리하는 공간입니다.
+          글을 쓰면서 스스로도 더 깊이 이해하게 된다고 믿어요.
+        </p>
+        <p>
+          궁금한 게 있으시면 GitHub 이슈나 이메일로 연락주세요.
+        </p>
+      </div>
+      <div class="mt-6 flex gap-3">
+        <a
+          href="https://github.com/grobiann"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-sm font-medium text-[#2c2416] bg-[#f5ead8] hover:bg-[#ecdcc0] border border-[#d4b896] px-4 py-2 rounded-lg transition-colors"
+        >
+          GitHub →
+        </a>
+      </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="mb-14 pb-12 border-b border-[#e8ddd0]">
+      <h2 class="font-serif text-2xl font-bold tracking-tight text-[#1a1208] mb-7">기술 스택</h2>
+      <div class="space-y-5">
+        {techStack.map(({ category, items }) => (
+          <div class="flex gap-4 sm:gap-8">
+            <span class="text-sm font-semibold text-[#b0977a] w-24 flex-shrink-0 pt-0.5">
+              {category}
+            </span>
+            <div class="flex flex-wrap gap-2">
+              {items.map((item) => (
+                <span class="text-sm text-[#2c2416] bg-white border border-[#e8ddd0] px-3 py-1 rounded-lg">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- This Site -->
+    <section>
+      <h2 class="font-serif text-2xl font-bold tracking-tight text-[#1a1208] mb-5">이 사이트는</h2>
+      <ul class="space-y-2 text-[#7a6a52] text-sm leading-relaxed">
+        <li class="flex gap-3">
+          <span class="text-[#d4b896] mt-1">›</span>
+          <span><strong class="text-[#2c2416]">Astro</strong>로 빌드 — 최소한의 JavaScript, 빠른 로딩</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="text-[#d4b896] mt-1">›</span>
+          <span><strong class="text-[#2c2416]">Tailwind CSS</strong>로 스타일링</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="text-[#d4b896] mt-1">›</span>
+          <span><strong class="text-[#2c2416]">GitHub Pages</strong>로 무료 호스팅</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="text-[#d4b896] mt-1">›</span>
+          <span><strong class="text-[#2c2416]">GitHub Actions</strong>으로 자동 배포</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="text-[#d4b896] mt-1">›</span>
+          <span>소스코드:
+            <a
+              href="https://github.com/grobiann/ai-lab-notes"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-[#c07a2f] hover:underline"
+            >
+              github.com/grobiann/ai-lab-notes
+            </a>
+          </span>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+
+</BaseLayout>

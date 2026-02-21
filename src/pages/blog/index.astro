@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const BASE = import.meta.env.BASE_URL;
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Group by year
+const postsByYear: Record<number, typeof posts> = {};
+for (const post of posts) {
+  const year = post.data.pubDate.getFullYear();
+  if (!postsByYear[year]) postsByYear[year] = [];
+  postsByYear[year].push(post);
+}
+const years = Object.keys(postsByYear).map(Number).sort((a, b) => b - a);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+}
+---
+
+<BaseLayout title="Blog" description="개발과 AI 학습을 기록하는 글 모음">
+
+  <div class="max-w-2xl mx-auto px-6 py-14">
+
+    <header class="mb-12">
+      <p class="text-xs font-semibold tracking-widest uppercase text-[#c07a2f] mb-3">Blog</p>
+      <h1 class="font-serif text-4xl font-bold tracking-tight text-[#1a1208] mb-3">글 목록</h1>
+      <p class="text-[#7a6a52]">총 {posts.length}편의 글</p>
+    </header>
+
+    {posts.length === 0 ? (
+      <p class="text-[#b0977a]">아직 작성된 글이 없습니다.</p>
+    ) : (
+      <div class="space-y-12">
+        {years.map((year) => (
+          <section>
+            <h2 class="font-serif text-xl font-bold text-[#b0977a] mb-4 pb-2 border-b border-[#e8ddd0]">
+              {year}
+            </h2>
+            <ul class="space-y-0">
+              {postsByYear[year].map((post) => (
+                <li>
+                  <a
+                    href={`${BASE}/blog/${post.slug}/`}
+                    class="group flex items-baseline gap-4 py-3.5 border-b border-[#f5ead8] hover:border-[#d4b896] transition-colors"
+                  >
+                    <time class="text-sm text-[#b0977a] w-20 flex-shrink-0">
+                      {formatDate(post.data.pubDate)}
+                    </time>
+                    <div class="flex-1 min-w-0">
+                      <span class="font-serif font-semibold text-[#2c2416] group-hover:text-[#c07a2f] transition-colors">
+                        {post.data.title}
+                      </span>
+                    </div>
+                    <div class="hidden sm:flex gap-1.5 flex-shrink-0">
+                      {post.data.tags.slice(0, 2).map((tag) => (
+                        <span class="text-xs text-[#c07a2f] bg-[#fdf3e3] px-2 py-0.5 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    )}
+  </div>
+
+</BaseLayout>

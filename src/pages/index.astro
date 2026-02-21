@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const BASE = import.meta.env.BASE_URL;
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const recentPosts = allPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 4);
+
+const allProjects = await getCollection('projects');
+const featuredProjects = allProjects
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 4);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+const skills = ['Python', 'TypeScript', 'Machine Learning', 'Node.js', 'FastAPI', 'PostgreSQL'];
+---
+
+<BaseLayout title="Home" description="AI · 개발 · 학습을 기록하는 grobiann의 블로그">
+
+  <!-- HERO -->
+  <section class="max-w-3xl mx-auto px-6 pt-16 pb-14 border-b border-[#e8ddd0]">
+    <p class="text-xs font-semibold tracking-widest uppercase text-[#c07a2f] mb-4">AI Lab Notes</p>
+    <h1 class="font-serif text-4xl sm:text-5xl font-bold leading-tight tracking-tight text-[#1a1208] mb-4">
+      Learning in public,<br class="hidden sm:block" />
+      building with care.
+    </h1>
+    <p class="text-[#7a6a52] text-lg leading-relaxed max-w-lg mb-8">
+      AI와 개발을 공부하며 발견한 것들을 기록합니다.<br />
+      작은 실험, 깊은 고민, 그리고 꾸준한 배움.
+    </p>
+    <div class="flex flex-wrap gap-2">
+      {skills.map((skill) => (
+        <span class="text-sm text-[#7a6a52] border border-[#d4b896] px-3 py-1 rounded-full">
+          {skill}
+        </span>
+      ))}
+    </div>
+  </section>
+
+  <!-- RECENT POSTS -->
+  <section class="max-w-3xl mx-auto px-6 pt-12 pb-10">
+    <div class="flex items-center gap-4 mb-7">
+      <h2 class="font-serif text-2xl font-bold tracking-tight">최근 글</h2>
+      <div class="flex-1 h-px bg-[#e8ddd0]"></div>
+      <a href={`${BASE}/blog/`} class="text-sm text-[#c07a2f] hover:underline">전체 보기 →</a>
+    </div>
+
+    {recentPosts.length === 0 ? (
+      <p class="text-[#b0977a] text-sm">아직 작성된 글이 없습니다.</p>
+    ) : (
+      <div class="space-y-3">
+        {recentPosts.map((post) => (
+          <a
+            href={`${BASE}/blog/${post.slug}/`}
+            class="group block bg-white border border-[#e8ddd0] hover:border-[#d4b896] rounded-xl px-6 py-5 transition-all hover:shadow-sm"
+          >
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              {post.data.tags.slice(0, 2).map((tag) => (
+                <span class="text-xs text-[#c07a2f] font-medium">{tag}</span>
+              ))}
+              {post.data.tags.length > 1 && <span class="text-xs text-[#d4b896]">·</span>}
+              <time class="text-xs text-[#b0977a]">{formatDate(post.data.pubDate)}</time>
+            </div>
+            <h3 class="font-serif text-base font-bold text-[#2c2416] group-hover:text-[#c07a2f] transition-colors leading-snug mb-1">
+              {post.data.title}
+            </h3>
+            <p class="text-sm text-[#7a6a52] line-clamp-2 leading-relaxed">{post.data.description}</p>
+          </a>
+        ))}
+      </div>
+    )}
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="max-w-3xl mx-auto px-6 pb-16">
+    <div class="flex items-center gap-4 mb-7">
+      <h2 class="font-serif text-2xl font-bold tracking-tight">프로젝트</h2>
+      <div class="flex-1 h-px bg-[#e8ddd0]"></div>
+      <a href={`${BASE}/projects/`} class="text-sm text-[#c07a2f] hover:underline">전체 보기 →</a>
+    </div>
+
+    {featuredProjects.length === 0 ? (
+      <p class="text-[#b0977a] text-sm">아직 등록된 프로젝트가 없습니다.</p>
+    ) : (
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {featuredProjects.map((project) => (
+          <a
+            href={`${BASE}/projects/${project.slug}/`}
+            class="group block bg-white border border-[#e8ddd0] hover:border-[#d4b896] rounded-xl p-6 transition-all hover:shadow-sm"
+          >
+            <h3 class="font-serif text-base font-bold text-[#2c2416] group-hover:text-[#c07a2f] transition-colors mb-2">
+              {project.data.title}
+            </h3>
+            <p class="text-sm text-[#7a6a52] leading-relaxed mb-4 line-clamp-2">
+              {project.data.description}
+            </p>
+            <div class="flex flex-wrap gap-1.5">
+              {project.data.tags.map((tag) => (
+                <span class="text-xs text-[#7a6a52] bg-[#f5ead8] px-2 py-0.5 rounded">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </section>
+
+</BaseLayout>
