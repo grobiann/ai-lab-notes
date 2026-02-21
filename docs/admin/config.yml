@@ -2,8 +2,7 @@ backend:
   name: github
   repo: grobiann/ai-lab-notes
   branch: main
-  auth_type: pkce
-  app_id: Ov23liGZbTJgsZse6tKJ  # 아래 안내대로 발급 후 여기 입력
+  app_id: Ov23liGZbTJgsZse6tKJ
 
 site_url: https://grobiann.github.io/ai-lab-notes
 
