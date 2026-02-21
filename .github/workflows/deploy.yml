@@ -3,7 +3,6 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - claude/plan-blog-portfolio-EaH58
       - main
     paths-ignore:
       - 'docs/**'
