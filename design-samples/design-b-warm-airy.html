@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design B — Warm & Airy</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #faf8f5;
+      color: #2c2416;
+      line-height: 1.7;
+    }
+
+    /* NAV */
+    nav {
+      background: #faf8f5;
+      padding: 20px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #2c2416;
+    }
+    .logo em { font-style: italic; color: #c07a2f; }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      text-decoration: none;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 13px;
+      color: #7a6a52;
+      letter-spacing: 0.5px;
+    }
+    .nav-links a:hover { color: #c07a2f; }
+
+    /* DIVIDER */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #d4b896, transparent);
+      margin: 0 48px;
+    }
+
+    /* HERO */
+    .hero {
+      max-width: 720px;
+      margin: 72px auto 56px;
+      padding: 0 32px;
+      text-align: center;
+    }
+    .hero-tag {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #c07a2f;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      color: #1a1208;
+    }
+    .hero p {
+      font-size: 17px;
+      color: #7a6a52;
+      line-height: 1.8;
+      max-width: 480px;
+      margin: 0 auto 28px;
+    }
+    .skills {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .skill {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 12px;
+      color: #7a6a52;
+      border: 1px solid #d4b896;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    /* SECTION */
+    .section {
+      max-width: 720px;
+      margin: 0 auto 64px;
+      padding: 0 32px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .section-line { flex: 1; height: 1px; background: #e8ddd0; }
+
+    /* POST CARDS */
+    .post-card {
+      background: #fff;
+      border: 1px solid #e8ddd0;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 12px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: box-shadow 0.2s;
+    }
+    .post-card:hover { box-shadow: 0 4px 20px rgba(192, 122, 47, 0.1); }
+    .post-meta {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px;
+      color: #c07a2f;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .post-title { font-size: 16px; font-weight: 700; line-height: 1.4; }
+    .post-excerpt { font-size: 14px; color: #7a6a52; margin-top: 6px; }
+
+    /* PROJECT CARDS */
+    .project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .project-card {
+      background: #fff;
+      border: 1px solid #e8ddd0;
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .project-card:hover { box-shadow: 0 4px 20px rgba(192, 122, 47, 0.1); }
+    .project-icon { font-size: 24px; margin-bottom: 12px; }
+    .project-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .project-desc { font-family: 'Helvetica Neue', sans-serif; font-size: 13px; color: #7a6a52; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid #e8ddd0;
+      padding: 28px 48px;
+      text-align: center;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 12px;
+      color: #b0977a;
+    }
+
+    /* LABEL */
+    .design-label {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      background: #c07a2f;
+      color: white;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="design-label">Design B — Warm & Airy</div>
+
+  <nav>
+    <div class="logo">grobiann<em>.</em></div>
+    <div class="nav-links">
+      <a href="#">Blog</a>
+      <a href="#">Projects</a>
+      <a href="#">About</a>
+    </div>
+  </nav>
+  <div class="divider"></div>
+
+  <section class="hero">
+    <div class="hero-tag">AI Lab Notes</div>
+    <h1>Learning in public,<br>building with care.</h1>
+    <p>AI와 개발을 공부하며 발견한 것들을 기록합니다. 작은 실험, 깊은 고민.</p>
+    <div class="skills">
+      <span class="skill">Python</span>
+      <span class="skill">TypeScript</span>
+      <span class="skill">Machine Learning</span>
+      <span class="skill">Node.js</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <span class="section-title">최근 글</span>
+      <div class="section-line"></div>
+    </div>
+    <a class="post-card" href="#">
+      <div class="post-meta">2026.02.18 · AI / Deep Learning</div>
+      <div class="post-title">Transformer 어텐션 메커니즘 직접 구현해보기</div>
+      <div class="post-excerpt">수식만 보다가 직접 NumPy로 구현해보니 확실히 달랐다...</div>
+    </a>
+    <a class="post-card" href="#">
+      <div class="post-meta">2026.02.10 · Python</div>
+      <div class="post-title">Python asyncio 패턴 정리</div>
+      <div class="post-excerpt">async/await를 쓰면서 헷갈렸던 패턴들을 정리해봤다...</div>
+    </a>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <span class="section-title">프로젝트</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="project-grid">
+      <div class="project-card">
+        <div class="project-icon">📓</div>
+        <div class="project-name">AI Lab Notes</div>
+        <div class="project-desc">AI 학습 실험 기록 & 블로그 사이트</div>
+      </div>
+      <div class="project-card">
+        <div class="project-icon">⚙️</div>
+        <div class="project-name">DevUtils CLI</div>
+        <div class="project-desc">개발자용 유틸리티 커맨드라인 툴</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>© 2026 grobiann · Built with Astro + GitHub Pages</footer>
+</body>
+</html>

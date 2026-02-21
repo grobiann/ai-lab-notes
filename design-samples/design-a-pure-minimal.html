@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design A — Pure Minimal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: #ffffff;
+      color: #111111;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      border-bottom: 1px solid #e5e5e5;
+      padding: 0 40px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+    .logo span { color: #3b5bdb; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 13px;
+      color: #555;
+      letter-spacing: 0.2px;
+    }
+    .nav-links a:hover { color: #111; }
+
+    /* HERO */
+    .hero {
+      max-width: 680px;
+      margin: 80px auto 64px;
+      padding: 0 24px;
+    }
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .hero h1 .accent { color: #3b5bdb; }
+    .hero p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .badge {
+      display: inline-block;
+      background: #f1f3ff;
+      color: #3b5bdb;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    /* SECTION */
+    .section {
+      max-width: 680px;
+      margin: 0 auto 64px;
+      padding: 0 24px;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    /* POST LIST */
+    .post-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f0f0;
+      text-decoration: none;
+      color: inherit;
+    }
+    .post-item:first-of-type { border-top: 1px solid #f0f0f0; }
+    .post-item:hover .post-title { color: #3b5bdb; }
+    .post-title { font-size: 15px; font-weight: 500; }
+    .post-date { font-size: 12px; color: #aaa; white-space: nowrap; margin-left: 16px; }
+
+    /* PROJECT CARDS */
+    .project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .project-card {
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .project-card:hover { border-color: #3b5bdb; }
+    .project-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .project-desc { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 12px; }
+    .project-tag {
+      font-size: 11px;
+      color: #888;
+      background: #f5f5f5;
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-right: 4px;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid #e5e5e5;
+      padding: 24px 40px;
+      text-align: center;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    /* LABEL */
+    .design-label {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      background: #3b5bdb;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="design-label">Design A — Pure Minimal</div>
+
+  <nav>
+    <div class="logo">grobiann<span>.</span>dev</div>
+    <div class="nav-links">
+      <a href="#">Blog</a>
+      <a href="#">Projects</a>
+      <a href="#">About</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>안녕하세요,<br><span class="accent">개발자 grobiann</span>입니다.</h1>
+    <p>AI · 백엔드 · 알고리즘에 관심이 많습니다.<br>학습한 내용을 기록하고 프로젝트를 공유합니다.</p>
+    <div>
+      <span class="badge">Python</span>
+      <span class="badge">TypeScript</span>
+      <span class="badge">Machine Learning</span>
+      <span class="badge">Node.js</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">Recent Posts</div>
+    <a class="post-item" href="#">
+      <span class="post-title">Transformer 어텐션 메커니즘 직접 구현해보기</span>
+      <span class="post-date">2026.02.18</span>
+    </a>
+    <a class="post-item" href="#">
+      <span class="post-title">Python asyncio 패턴 정리</span>
+      <span class="post-date">2026.02.10</span>
+    </a>
+    <a class="post-item" href="#">
+      <span class="post-title">PostgreSQL 인덱스 전략 — 실전 가이드</span>
+      <span class="post-date">2026.01.28</span>
+    </a>
+  </section>
+
+  <section class="section">
+    <div class="section-title">Projects</div>
+    <div class="project-grid">
+      <div class="project-card">
+        <div class="project-name">AI Lab Notes</div>
+        <div class="project-desc">AI 학습 실험 기록 & 블로그 사이트</div>
+        <span class="project-tag">Astro</span>
+        <span class="project-tag">Python</span>
+      </div>
+      <div class="project-card">
+        <div class="project-name">DevUtils CLI</div>
+        <div class="project-desc">개발자용 유틸리티 커맨드라인 툴</div>
+        <span class="project-tag">TypeScript</span>
+        <span class="project-tag">Node</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>© 2026 grobiann · Built with Astro + GitHub Pages</footer>
+</body>
+</html>

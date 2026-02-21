@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design C — Fresh Modern</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: #f8fafb;
+      color: #1a2332;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      background: #ffffff;
+      padding: 0 48px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 0 #eef0f3;
+    }
+    .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a2332;
+      letter-spacing: -0.3px;
+    }
+    .logo-dot { color: #0ea5a0; }
+    .nav-links { display: flex; gap: 8px; }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 13px;
+      color: #5a6476;
+      padding: 6px 14px;
+      border-radius: 6px;
+    }
+    .nav-links a:hover { background: #f0fafa; color: #0ea5a0; }
+
+    /* HERO */
+    .hero {
+      background: #ffffff;
+      padding: 64px 48px;
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      max-width: 860px;
+      margin: 32px auto;
+      border-radius: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .hero-text { flex: 1; }
+    .hero-avatar {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #0ea5a0, #5b8dee);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      flex-shrink: 0;
+    }
+    .hero-greeting {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #0ea5a0;
+      margin-bottom: 10px;
+    }
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.25;
+      margin-bottom: 14px;
+    }
+    .hero p {
+      font-size: 15px;
+      color: #5a6476;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .tag-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: #f0fafa;
+      color: #0ea5a0;
+    }
+    .tag.blue { background: #eff4ff; color: #5b8dee; }
+    .tag.purple { background: #f5f0ff; color: #8b5cf6; }
+
+    /* WRAPPER */
+    .wrapper {
+      max-width: 860px;
+      margin: 0 auto 32px;
+      padding: 0 0;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+    }
+
+    /* POSTS */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #aab0bc;
+      margin-bottom: 20px;
+    }
+    .post-item {
+      display: flex;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f2f5;
+      text-decoration: none;
+      color: inherit;
+      align-items: flex-start;
+    }
+    .post-item:last-child { border-bottom: none; }
+    .post-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: #c8cdd6;
+      width: 18px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .post-info { flex: 1; }
+    .post-title { font-size: 14px; font-weight: 600; line-height: 1.4; margin-bottom: 3px; }
+    .post-item:hover .post-title { color: #0ea5a0; }
+    .post-date { font-size: 11px; color: #aab0bc; }
+
+    /* SIDEBAR */
+    .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+    /* PROJECT MINI CARDS */
+    .project-mini {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .project-mini:last-child { border-bottom: none; }
+    .project-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #f0fafa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .project-name { font-size: 13px; font-weight: 600; }
+    .project-tech { font-size: 11px; color: #aab0bc; margin-top: 2px; }
+
+    /* STATS */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat {
+      background: #f8fafb;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-num { font-size: 22px; font-weight: 800; color: #0ea5a0; }
+    .stat-label { font-size: 11px; color: #aab0bc; margin-top: 2px; }
+
+    /* FOOTER */
+    footer {
+      max-width: 860px;
+      margin: 0 auto 32px;
+      text-align: center;
+      font-size: 12px;
+      color: #aab0bc;
+    }
+
+    /* LABEL */
+    .design-label {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      background: #0ea5a0;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="design-label">Design C — Fresh Modern</div>
+
+  <nav>
+    <div class="logo">grobiann<span class="logo-dot">.</span>dev</div>
+    <div class="nav-links">
+      <a href="#">Blog</a>
+      <a href="#">Projects</a>
+      <a href="#">About</a>
+    </div>
+  </nav>
+
+  <div style="max-width:860px; margin:0 auto; padding: 0 20px;">
+
+    <section class="hero">
+      <div class="hero-text">
+        <div class="hero-greeting">👋 Hello, World!</div>
+        <h1>AI를 공부하고<br>기록하는 개발자</h1>
+        <p>학습한 내용, 실험 결과, 개발 노트를 공유합니다.</p>
+        <div class="tag-group">
+          <span class="tag">Python</span>
+          <span class="tag blue">TypeScript</span>
+          <span class="tag purple">ML / AI</span>
+          <span class="tag">Node.js</span>
+        </div>
+      </div>
+      <div class="hero-avatar">🤖</div>
+    </section>
+
+    <div class="wrapper">
+      <div class="card">
+        <div class="card-title">Recent Posts</div>
+        <a class="post-item" href="#">
+          <span class="post-num">01</span>
+          <div class="post-info">
+            <div class="post-title">Transformer 어텐션 메커니즘 직접 구현해보기</div>
+            <div class="post-date">2026.02.18</div>
+          </div>
+        </a>
+        <a class="post-item" href="#">
+          <span class="post-num">02</span>
+          <div class="post-info">
+            <div class="post-title">Python asyncio 패턴 정리</div>
+            <div class="post-date">2026.02.10</div>
+          </div>
+        </a>
+        <a class="post-item" href="#">
+          <span class="post-num">03</span>
+          <div class="post-info">
+            <div class="post-title">PostgreSQL 인덱스 전략 — 실전 가이드</div>
+            <div class="post-date">2026.01.28</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="sidebar">
+        <div class="card">
+          <div class="card-title">Projects</div>
+          <div class="project-mini">
+            <div class="project-icon">📓</div>
+            <div>
+              <div class="project-name">AI Lab Notes</div>
+              <div class="project-tech">Astro · Python</div>
+            </div>
+          </div>
+          <div class="project-mini">
+            <div class="project-icon">⚙️</div>
+            <div>
+              <div class="project-name">DevUtils CLI</div>
+              <div class="project-tech">TypeScript · Node</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Stats</div>
+          <div class="stats-grid">
+            <div class="stat">
+              <div class="stat-num">12</div>
+              <div class="stat-label">Posts</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">5</div>
+              <div class="stat-label">Projects</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>© 2026 grobiann · Built with Astro + GitHub Pages</footer>
+
+  </div>
+</body>
+</html>
