@@ -1,6 +1,7 @@
 # build output
 dist/
 .output/
+# docs/ is intentionally tracked (GitHub Pages source)
 
 # generated types
 .astro/
