@@ -2,7 +2,6 @@ backend:
   name: github
   repo: grobiann/ai-lab-notes
   branch: main
-  app_id: Ov23liGZbTJgsZse6tKJ
 
 site_url: https://grobiann.github.io/ai-lab-notes
 
