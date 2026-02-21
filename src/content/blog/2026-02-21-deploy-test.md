@@ -6,3 +6,5 @@ tags: ["etc"]
 ---
 
 이 글이 사이트에 보이면 GitHub Actions 자동 배포가 정상 동작하는 것입니다. ✓
+
+두 번째 테스트 — Pages Source를 GitHub Actions로 변경 후 확인용.
