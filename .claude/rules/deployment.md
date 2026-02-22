@@ -21,9 +21,12 @@ main 브랜치 push
 
 ## Git 브랜치 전략
 
-- 개발: `claude/...` 브랜치에서 작업
-- 배포: `main` 브랜치 기준 (push 시 자동 빌드)
+- **작업 브랜치: `main` 단일 브랜치** — 모든 개발·수정은 main에서 직접 진행
+- 별도 feature 브랜치 없이 main에 직접 커밋·푸시
 - `package-lock.json` 삭제 금지 — CI에서 `npm ci` 사용 중
+
+> **주의 (Claude Code 환경 제약)**: Claude Code 세션은 보안상 `main`에 직접 push 불가.
+> Claude가 작업한 결과는 `claude/...` 브랜치로 올라가며, 사용자가 직접 main에 머지해야 함.
 
 ## Sveltia CMS
 
