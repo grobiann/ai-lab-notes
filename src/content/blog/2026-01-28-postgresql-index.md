@@ -1,5 +1,5 @@
 ---
-title: "PostgreSQL 인덱스 전략 — 실전 가이드"
+title: "[샘플 글] PostgreSQL 인덱스 전략 — 실전 가이드"
 description: "언제 어떤 인덱스를 쓰면 좋은지, EXPLAIN ANALYZE로 실제 성능을 확인하는 방법을 정리합니다."
 pubDate: 2026-01-28
 tags: ["Backend", "Database"]

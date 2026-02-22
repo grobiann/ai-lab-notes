@@ -1,5 +1,5 @@
 ---
-title: "AI Lab Notes"
+title: "[샘플 프로젝트] AI Lab Notes"
 description: "AI와 개발 학습 과정을 기록하는 개인 블로그 & 포트폴리오 사이트. Astro + Tailwind CSS로 빌드, GitHub Pages로 배포."
 tags: ["Astro", "Tailwind CSS", "TypeScript", "GitHub Pages"]
 github: "https://github.com/grobiann/ai-lab-notes"
