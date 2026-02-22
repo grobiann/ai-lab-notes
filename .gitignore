@@ -27,3 +27,6 @@ pnpm-debug.log*
 
 # VS Code
 .vscode/
+
+# Claude 로컬 개인 설정 (공유 안 함)
+CLAUDE.local.md
