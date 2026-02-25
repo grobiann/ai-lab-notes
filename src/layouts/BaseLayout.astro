@@ -81,7 +81,10 @@ const currentPath = Astro.url.pathname;
   <footer class="border-t border-[#e8ddd0] mt-16">
     <div class="max-w-3xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#b0977a]">
       <span>© {new Date().getFullYear()} grobiann</span>
-      <span>Built with <a href="https://astro.build" class="hover:text-[#c07a2f] transition-colors">Astro</a> · Hosted on GitHub Pages</span>
+      <div class="flex items-center gap-4">
+        <span>Built with <a href="https://astro.build" class="hover:text-[#c07a2f] transition-colors">Astro</a> · Hosted on GitHub Pages</span>
+        <a href={`${BASE}/admin/`} class="text-[#d4b896] hover:text-[#c07a2f] transition-colors">Admin</a>
+      </div>
     </div>
   </footer>
 
