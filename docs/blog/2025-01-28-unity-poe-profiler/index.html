@@ -1,0 +1,121 @@
+<!DOCTYPE html><html lang="ko" class="scroll-smooth"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="canonical" href="https://grobiann.github.io/ai-lab-notes/blog/2025-01-28-unity-poe-profiler/"><meta name="description" content="Unity ProfilerRecorder로 CPU·GPU·메모리·네트워크를 런타임에서 직접 읽는 방법과, Unsafe 코드로 성능을 높이는 stackalloc 활용법을 정리한다."><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://grobiann.github.io/ai-lab-notes/blog/2025-01-28-unity-poe-profiler/"><meta property="og:title" content="[Unity] PathOfExile 따라하기 - 프로파일러"><meta property="og:description" content="Unity ProfilerRecorder로 CPU·GPU·메모리·네트워크를 런타임에서 직접 읽는 방법과, Unsafe 코드로 성능을 높이는 stackalloc 활용법을 정리한다."><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="[Unity] PathOfExile 따라하기 - 프로파일러"><meta name="twitter:description" content="Unity ProfilerRecorder로 CPU·GPU·메모리·네트워크를 런타임에서 직접 읽는 방법과, Unsafe 코드로 성능을 높이는 stackalloc 활용법을 정리한다."><link rel="icon" type="image/svg+xml" href="/ai-lab-notes/favicon.svg"><title>[Unity] PathOfExile 따라하기 - 프로파일러 · grobiann</title><link rel="stylesheet" href="/ai-lab-notes/_astro/about.D043qiqY.css"></head> <body class="bg-[#faf8f5] text-[#2c2416] font-sans antialiased min-h-screen flex flex-col"> <!-- NAV --> <header class="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur border-b border-[#e8ddd0]"> <nav class="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between"> <a href="/ai-lab-notes/" class="font-serif text-lg font-bold tracking-tight text-[#2c2416] hover:text-[#c07a2f] transition-colors">
+grobiann<em class="not-italic text-[#c07a2f]">.</em> </a> <ul class="flex items-center gap-1"> <li> <a href="/ai-lab-notes/blog/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#c07a2f] font-medium bg-[#fdf3e3]"> Blog </a> </li><li> <a href="/ai-lab-notes/projects/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#7a6a52] hover:text-[#2c2416] hover:bg-[#f5ead8]"> Projects </a> </li><li> <a href="/ai-lab-notes/about/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#7a6a52] hover:text-[#2c2416] hover:bg-[#f5ead8]"> About </a> </li> </ul> </nav> </header> <!-- CONTENT --> <main class="flex-1">  <article class="max-w-2xl mx-auto px-6 py-14"> <!-- Breadcrumb --> <div class="text-sm text-[#b0977a] mb-8"> <a href="/ai-lab-notes/blog/" class="hover:text-[#c07a2f] transition-colors">Blog</a> <span class="mx-2">›</span> <span class="text-[#7a6a52]">[Unity] PathOfExile 따라하기 - 프로파일러</span> </div> <!-- Header --> <header class="mb-10 pb-10 border-b border-[#e8ddd0]"> <div class="flex flex-wrap gap-2 mb-4"> <span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> Unity </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> C# </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> 최적화 </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> PathOfExile 따라하기 </span> </div> <h1 class="font-serif text-3xl sm:text-4xl font-bold leading-tight tracking-tight text-[#1a1208] mb-4"> [Unity] PathOfExile 따라하기 - 프로파일러 </h1> <p class="text-[#7a6a52] text-base leading-relaxed mb-5">Unity ProfilerRecorder로 CPU·GPU·메모리·네트워크를 런타임에서 직접 읽는 방법과, Unsafe 코드로 성능을 높이는 stackalloc 활용법을 정리한다.</p> <div class="text-sm text-[#b0977a] flex items-center gap-3"> <time datetime="2025-01-28T00:00:00.000Z">2025년 1월 28일</time>  </div> </header> <!-- Body --> <div class="prose prose-warm prose-lg max-w-none
+                prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
+                prose-a:text-[#c07a2f] prose-a:no-underline hover:prose-a:underline
+                prose-code:text-[#c07a2f] prose-code:bg-[#fdf3e3] prose-code:px-1 prose-code:rounded
+                prose-pre:bg-[#faf5ec] prose-pre:border prose-pre:border-[#e8ddd0]
+                prose-blockquote:border-[#d4b896] prose-blockquote:text-[#7a6a52]
+                prose-hr:border-[#e8ddd0]">  <p>PathOfExile 2를 플레이하다 보면 우측 상단에 CPU·GPU·핑 등의 수치가 실시간으로 표시된다. Unity에서도 같은 걸 구현해보기로 했다.</p>
+<h2 id="unity-프로파일러-기본">Unity 프로파일러 기본</h2>
+<p><code>Ctrl+7</code>로 Unity Editor에서 프로파일러 창을 열 수 있다. 하지만 이건 Editor 전용이다. 빌드된 게임에서 런타임 수치를 읽으려면 <code>ProfilerRecorder</code> API를 써야 한다.</p>
+<p>주의: <strong>Development Build</strong> 에서만 동작한다. Release 빌드에서는 프로파일러 데이터가 수집되지 않는다.</p>
+<h2 id="profilerrecorder로-데이터-읽기">ProfilerRecorder로 데이터 읽기</h2>
+<p><code>ProfilerRecorder</code>는 Unity가 내부적으로 수집하는 약 4,800개의 Stat에 접근할 수 있게 해준다.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">public</span><span style="color:#D73A49"> class</span><span style="color:#6F42C1"> PerformanceMonitor</span><span style="color:#24292E"> : </span><span style="color:#6F42C1">MonoBehaviour</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#6F42C1">    ProfilerRecorder</span><span style="color:#6F42C1"> cpuRecorder</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#6F42C1">    ProfilerRecorder</span><span style="color:#6F42C1"> gpuRecorder</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#6F42C1">    ProfilerRecorder</span><span style="color:#6F42C1"> memoryRecorder</span><span style="color:#24292E">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    void</span><span style="color:#6F42C1"> OnEnable</span><span style="color:#24292E">()</span></span>
+<span class="line"><span style="color:#24292E">    {</span></span>
+<span class="line"><span style="color:#24292E">        cpuRecorder    </span><span style="color:#D73A49">=</span><span style="color:#24292E"> ProfilerRecorder.</span><span style="color:#6F42C1">StartNew</span><span style="color:#24292E">(ProfilerCategory.Internal, </span><span style="color:#032F62">"CPU Total Frame Time"</span><span style="color:#24292E">);</span></span>
+<span class="line"><span style="color:#24292E">        gpuRecorder    </span><span style="color:#D73A49">=</span><span style="color:#24292E"> ProfilerRecorder.</span><span style="color:#6F42C1">StartNew</span><span style="color:#24292E">(ProfilerCategory.Internal, </span><span style="color:#032F62">"GPU Frame Time"</span><span style="color:#24292E">);</span></span>
+<span class="line"><span style="color:#24292E">        memoryRecorder </span><span style="color:#D73A49">=</span><span style="color:#24292E"> ProfilerRecorder.</span><span style="color:#6F42C1">StartNew</span><span style="color:#24292E">(ProfilerCategory.Memory,   </span><span style="color:#032F62">"System Used Memory"</span><span style="color:#24292E">);</span></span>
+<span class="line"><span style="color:#24292E">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    void</span><span style="color:#6F42C1"> OnDisable</span><span style="color:#24292E">()</span></span>
+<span class="line"><span style="color:#24292E">    {</span></span>
+<span class="line"><span style="color:#24292E">        cpuRecorder.</span><span style="color:#6F42C1">Dispose</span><span style="color:#24292E">();</span></span>
+<span class="line"><span style="color:#24292E">        gpuRecorder.</span><span style="color:#6F42C1">Dispose</span><span style="color:#24292E">();</span></span>
+<span class="line"><span style="color:#24292E">        memoryRecorder.</span><span style="color:#6F42C1">Dispose</span><span style="color:#24292E">();</span></span>
+<span class="line"><span style="color:#24292E">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    void</span><span style="color:#6F42C1"> Update</span><span style="color:#24292E">()</span></span>
+<span class="line"><span style="color:#24292E">    {</span></span>
+<span class="line"><span style="color:#D73A49">        double</span><span style="color:#6F42C1"> cpuMs</span><span style="color:#D73A49">  =</span><span style="color:#24292E"> cpuRecorder.LastValue  </span><span style="color:#D73A49">/</span><span style="color:#005CC5"> 1_000_000.0</span><span style="color:#24292E">; </span><span style="color:#6A737D">// nanosec → ms</span></span>
+<span class="line"><span style="color:#D73A49">        double</span><span style="color:#6F42C1"> gpuMs</span><span style="color:#D73A49">  =</span><span style="color:#24292E"> gpuRecorder.LastValue  </span><span style="color:#D73A49">/</span><span style="color:#005CC5"> 1_000_000.0</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#D73A49">        long</span><span style="color:#6F42C1">   memMB</span><span style="color:#D73A49">  =</span><span style="color:#24292E"> memoryRecorder.LastValue </span><span style="color:#D73A49">/</span><span style="color:#24292E"> (</span><span style="color:#005CC5">1024</span><span style="color:#D73A49"> *</span><span style="color:#005CC5"> 1024</span><span style="color:#24292E">);</span></span>
+<span class="line"><span style="color:#24292E">    }</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"></span></code></pre>
+<p><code>LastValue</code>는 nanosecond 단위로 반환되므로 ms로 변환할 때 10⁶으로 나눈다.</p>
+<h2 id="모니터링할-주요-stat-목록">모니터링할 주요 Stat 목록</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>Stat 이름</th><th>카테고리</th></tr></thead><tbody><tr><td>CPU 프레임 시간</td><td><code>CPU Total Frame Time</code></td><td><code>Internal</code></td></tr><tr><td>GPU 프레임 시간</td><td><code>GPU Frame Time</code></td><td><code>Internal</code></td></tr><tr><td>시스템 메모리</td><td><code>System Used Memory</code></td><td><code>Memory</code></td></tr><tr><td>GPU 메모리</td><td><code>Gfx Used Memory</code></td><td><code>Memory</code></td></tr><tr><td>셰이더 적용 시간</td><td><code>SRPBRender.ApplyShader</code></td><td><code>Render</code></td></tr><tr><td>네트워크 핑</td><td><code>Ping</code></td><td><code>Network</code></td></tr></tbody></table>
+<p>Stat 이름은 Unity 문서에 일부만 공개되어 있고, 나머지는 직접 프로파일러 창에서 찾아야 한다.</p>
+<h2 id="여러-프레임-평균-내기">여러 프레임 평균 내기</h2>
+<p>한 프레임의 값은 튀는 경우가 많다. 최근 N 프레임의 평균을 쓰면 안정적이다.</p>
+<p><code>ProfilerRecorder</code>는 생성 시 <code>capacity</code> 파라미터로 버퍼 크기를 지정할 수 있다.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 최근 5프레임을 버퍼에 유지</span></span>
+<span class="line"><span style="color:#24292E">cpuRecorder </span><span style="color:#D73A49">=</span><span style="color:#24292E"> ProfilerRecorder.</span><span style="color:#6F42C1">StartNew</span><span style="color:#24292E">(</span></span>
+<span class="line"><span style="color:#24292E">    ProfilerCategory.Internal,</span></span>
+<span class="line"><span style="color:#032F62">    "CPU Total Frame Time"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#6F42C1">    capacity</span><span style="color:#24292E">: </span><span style="color:#005CC5">5</span></span>
+<span class="line"><span style="color:#24292E">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 평균 계산</span></span>
+<span class="line"><span style="color:#D73A49">double</span><span style="color:#6F42C1"> avgCpuMs</span><span style="color:#D73A49"> =</span><span style="color:#005CC5"> 0</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#D73A49">for</span><span style="color:#24292E"> (</span><span style="color:#D73A49">int</span><span style="color:#6F42C1"> i</span><span style="color:#D73A49"> =</span><span style="color:#005CC5"> 0</span><span style="color:#24292E">; i </span><span style="color:#D73A49">&#x3C;</span><span style="color:#24292E"> cpuRecorder.Count; i</span><span style="color:#D73A49">++</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">    avgCpuMs </span><span style="color:#D73A49">+=</span><span style="color:#24292E"> cpuRecorder.</span><span style="color:#6F42C1">GetSample</span><span style="color:#24292E">(i).Value;</span></span>
+<span class="line"><span style="color:#24292E">avgCpuMs </span><span style="color:#D73A49">/=</span><span style="color:#24292E"> cpuRecorder.Count;</span></span>
+<span class="line"><span style="color:#24292E">avgCpuMs </span><span style="color:#D73A49">/=</span><span style="color:#005CC5"> 1_000_000.0</span><span style="color:#24292E">;</span></span>
+<span class="line"></span></code></pre>
+<h2 id="unsafe-코드로-최적화">Unsafe 코드로 최적화</h2>
+<p>샘플을 여러 개 읽을 때 <code>GetSample(i)</code>를 루프로 호출하면 managed 메모리 할당이 발생한다. <code>unsafe</code> + <code>stackalloc</code>을 쓰면 스택에 직접 배열을 할당해 GC 부담을 없앨 수 있다.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">unsafe</span><span style="color:#D73A49"> void</span><span style="color:#6F42C1"> ReadSamples</span><span style="color:#24292E">(</span><span style="color:#6F42C1">ProfilerRecorder</span><span style="color:#6F42C1"> recorder</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#D73A49">    int</span><span style="color:#6F42C1"> count</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> recorder.Count;</span></span>
+<span class="line"><span style="color:#6F42C1">    ProfilerRecorderSample</span><span style="color:#24292E">* </span><span style="color:#6F42C1">samples</span><span style="color:#D73A49"> =</span><span style="color:#D73A49"> stackalloc</span><span style="color:#6F42C1"> ProfilerRecorderSample</span><span style="color:#24292E">[count];</span></span>
+<span class="line"><span style="color:#24292E">    recorder.</span><span style="color:#6F42C1">CopyTo</span><span style="color:#24292E">(</span><span style="color:#D73A49">new</span><span style="color:#6F42C1"> Span</span><span style="color:#24292E">&#x3C;</span><span style="color:#6F42C1">ProfilerRecorderSample</span><span style="color:#24292E">>(samples, count));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    double</span><span style="color:#6F42C1"> total</span><span style="color:#D73A49"> =</span><span style="color:#005CC5"> 0</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#D73A49">    for</span><span style="color:#24292E"> (</span><span style="color:#D73A49">int</span><span style="color:#6F42C1"> i</span><span style="color:#D73A49"> =</span><span style="color:#005CC5"> 0</span><span style="color:#24292E">; i </span><span style="color:#D73A49">&#x3C;</span><span style="color:#24292E"> count; i</span><span style="color:#D73A49">++</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">        total </span><span style="color:#D73A49">+=</span><span style="color:#24292E"> samples[i].Value;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    double</span><span style="color:#6F42C1"> avgMs</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> total </span><span style="color:#D73A49">/</span><span style="color:#24292E"> count </span><span style="color:#D73A49">/</span><span style="color:#005CC5"> 1_000_000.0</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"></span></code></pre>
+<p><strong>주의</strong>: <code>unsafe</code> 코드는 <code>Project Settings → Player → Allow Unsafe Code</code>를 켜야 빌드된다. IL2CPP 기반(iOS, 콘솔)에서는 포인터 동작이 다를 수 있으니 플랫폼별 테스트가 필요하다.</p>
+<h2 id="pathofexile-2의-지연-노출-전략">PathOfExile 2의 지연 노출 전략</h2>
+<p>POE2는 단순히 수치를 보여주는 게 아니라, 수치가 나빠지기 전에 미리 로딩을 시작해서 체감 지연을 줄이는 전략을 쓴다. 예를 들어 CPU 사용률이 특정 임계값에 가까워지면 다음 지역 리소스를 미리 로드하는 식이다.</p>
+<p>런타임에서 프로파일링 데이터를 코드로 읽을 수 있으면 이런 적응형 로딩 전략도 구현할 수 있다.</p>  </div> </article>  </main> <!-- FOOTER --> <footer class="border-t border-[#e8ddd0] mt-16"> <div class="max-w-3xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#b0977a]"> <span>© 2026 grobiann</span> <span>Built with <a href="https://astro.build" class="hover:text-[#c07a2f] transition-colors">Astro</a> · Hosted on GitHub Pages</span> </div> </footer> </body></html>

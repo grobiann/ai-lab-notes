@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="ko" class="scroll-smooth"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="canonical" href="https://grobiann.github.io/ai-lab-notes/blog/2025-01-10-unity-poe-dungeon-1-indoor/"><meta name="description" content="매 플레이마다 새로운 실내 던전을 절차적으로 생성하는 방법. 타일·Room·던전 개념부터 8단계 생성 알고리즘까지 정리한다."><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://grobiann.github.io/ai-lab-notes/blog/2025-01-10-unity-poe-dungeon-1-indoor/"><meta property="og:title" content="[Unity] PathOfExile 따라하기 - 던전생성 #1: 실내지역"><meta property="og:description" content="매 플레이마다 새로운 실내 던전을 절차적으로 생성하는 방법. 타일·Room·던전 개념부터 8단계 생성 알고리즘까지 정리한다."><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="[Unity] PathOfExile 따라하기 - 던전생성 #1: 실내지역"><meta name="twitter:description" content="매 플레이마다 새로운 실내 던전을 절차적으로 생성하는 방법. 타일·Room·던전 개념부터 8단계 생성 알고리즘까지 정리한다."><link rel="icon" type="image/svg+xml" href="/ai-lab-notes/favicon.svg"><title>[Unity] PathOfExile 따라하기 - 던전생성 #1: 실내지역 · grobiann</title><link rel="stylesheet" href="/ai-lab-notes/_astro/about.D043qiqY.css"></head> <body class="bg-[#faf8f5] text-[#2c2416] font-sans antialiased min-h-screen flex flex-col"> <!-- NAV --> <header class="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur border-b border-[#e8ddd0]"> <nav class="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between"> <a href="/ai-lab-notes/" class="font-serif text-lg font-bold tracking-tight text-[#2c2416] hover:text-[#c07a2f] transition-colors">
+grobiann<em class="not-italic text-[#c07a2f]">.</em> </a> <ul class="flex items-center gap-1"> <li> <a href="/ai-lab-notes/blog/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#c07a2f] font-medium bg-[#fdf3e3]"> Blog </a> </li><li> <a href="/ai-lab-notes/projects/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#7a6a52] hover:text-[#2c2416] hover:bg-[#f5ead8]"> Projects </a> </li><li> <a href="/ai-lab-notes/about/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#7a6a52] hover:text-[#2c2416] hover:bg-[#f5ead8]"> About </a> </li> </ul> </nav> </header> <!-- CONTENT --> <main class="flex-1">  <article class="max-w-2xl mx-auto px-6 py-14"> <!-- Breadcrumb --> <div class="text-sm text-[#b0977a] mb-8"> <a href="/ai-lab-notes/blog/" class="hover:text-[#c07a2f] transition-colors">Blog</a> <span class="mx-2">›</span> <span class="text-[#7a6a52]">[Unity] PathOfExile 따라하기 - 던전생성 #1: 실내지역</span> </div> <!-- Header --> <header class="mb-10 pb-10 border-b border-[#e8ddd0]"> <div class="flex flex-wrap gap-2 mb-4"> <span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> Unity </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> C# </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> 절차적 생성 </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> PathOfExile 따라하기 </span> </div> <h1 class="font-serif text-3xl sm:text-4xl font-bold leading-tight tracking-tight text-[#1a1208] mb-4"> [Unity] PathOfExile 따라하기 - 던전생성 #1: 실내지역 </h1> <p class="text-[#7a6a52] text-base leading-relaxed mb-5">매 플레이마다 새로운 실내 던전을 절차적으로 생성하는 방법. 타일·Room·던전 개념부터 8단계 생성 알고리즘까지 정리한다.</p> <div class="text-sm text-[#b0977a] flex items-center gap-3"> <time datetime="2025-01-10T00:00:00.000Z">2025년 1월 10일</time>  </div> </header> <!-- Body --> <div class="prose prose-warm prose-lg max-w-none
+                prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
+                prose-a:text-[#c07a2f] prose-a:no-underline hover:prose-a:underline
+                prose-code:text-[#c07a2f] prose-code:bg-[#fdf3e3] prose-code:px-1 prose-code:rounded
+                prose-pre:bg-[#faf5ec] prose-pre:border prose-pre:border-[#e8ddd0]
+                prose-blockquote:border-[#d4b896] prose-blockquote:text-[#7a6a52]
+                prose-hr:border-[#e8ddd0]">  <p>PathOfExile은 매 게임마다 새로운 던전이 생성된다. 직접 구현해보기로 했다. 이번 편은 실내 던전(폐쇄된 방들이 이어진 형태)이다.</p>
+<h2 id="구성-요소">구성 요소</h2>
+<p>던전은 세 가지 단위로 이루어진다.</p>
+<ul>
+<li><strong>타일</strong>: 1×1 격자 한 칸. 주변 타일과 연결 관계를 가진다</li>
+<li><strong>Room</strong>: 1×1 ~ N×M 직사각형. 여러 타일로 구성</li>
+<li><strong>던전</strong>: 여러 Room의 집합</li>
+</ul>
+<h2 id="타일-설계">타일 설계</h2>
+<p>타일은 상·하·좌·우 4방향의 연결 여부로 정의된다. 4방향 각각이 열림/닫힘이므로 조합은 2⁴ = 16가지지만, 회전과 Flip을 활용하면 실제로 필요한 스프라이트는 훨씬 적다.</p>
+<p>Unity의 Rule Tile과 비슷하지만, 직접 만들면 Walkable 정보 등 커스텀 데이터를 타일에 담을 수 있다. 타일을 회전·Flip할 때 Walkable 정보도 함께 변환해야 한다.</p>
+<h2 id="room-구성">Room 구성</h2>
+<p>Room은 Tilemap2D를 활용해 프리팹으로 제작한다.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">public</span><span style="color:#D73A49"> class</span><span style="color:#6F42C1"> Room</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#D73A49">    public</span><span style="color:#D73A49"> int</span><span style="color:#6F42C1"> Width</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#D73A49">    public</span><span style="color:#D73A49"> int</span><span style="color:#6F42C1"> Height</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#D73A49">    public</span><span style="color:#6F42C1"> TileBase</span><span style="color:#24292E">[,] </span><span style="color:#6F42C1">Tiles</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#D73A49">    public</span><span style="color:#D73A49"> bool</span><span style="color:#24292E">[,] </span><span style="color:#6F42C1">Walkable</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#D73A49">    public</span><span style="color:#6F42C1"> RoomType</span><span style="color:#6F42C1"> Type</span><span style="color:#24292E">; </span><span style="color:#6A737D">// Start, End, Normal, Boss 등</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"></span></code></pre>
+<p>Room에는 타일 데이터 외에 어떤 종류인지(<code>RoomType</code>)도 담는다. 시작·종료 Room, 보스 Room은 특정 위치에 고정 배치하고, 나머지는 랜덤으로 채운다.</p>
+<h2 id="8단계-생성-알고리즘">8단계 생성 알고리즘</h2>
+<p>던전을 생성하는 순서다.</p>
+<ol>
+<li><strong>던전 크기 결정</strong>: 난이도·챕터에 따라 격자 크기를 설정</li>
+<li><strong>시작·종료 위치 배치</strong>: 일정 거리 이상 떨어지도록 배치</li>
+<li><strong>Room 랜덤 배치</strong>: 겹치지 않게 랜덤 위치에 Room을 배치</li>
+<li><strong>최단경로 탐색</strong>: 시작 → 종료 Room까지 BFS로 경로를 찾는다</li>
+<li><strong>경로 최적화</strong>: 경로에서 불필요하게 꺾이는 구간을 제거</li>
+<li><strong>인접 Room 추가</strong>: 경로 주변 방들을 연결해 탐험 공간을 넓힌다</li>
+<li><strong>문 생성</strong>: Room 사이 경계에 문을 배치</li>
+<li><strong>오브젝트 배치</strong>: 타일 정보 기반으로 가구·장애물 등을 스폰</li>
+</ol>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6F42C1">IEnumerator</span><span style="color:#6F42C1"> GenerateDungeon</span><span style="color:#24292E">(</span><span style="color:#6F42C1">DungeonConfig</span><span style="color:#6F42C1"> config</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#D73A49">    var</span><span style="color:#6F42C1"> grid</span><span style="color:#D73A49"> =</span><span style="color:#D73A49"> new</span><span style="color:#6F42C1"> DungeonGrid</span><span style="color:#24292E">(config.Width, config.Height);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6F42C1">    PlaceStartAndEnd</span><span style="color:#24292E">(grid, config);</span></span>
+<span class="line"><span style="color:#6F42C1">    PlaceRoomsRandom</span><span style="color:#24292E">(grid, config);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    var</span><span style="color:#6F42C1"> path</span><span style="color:#D73A49"> =</span><span style="color:#6F42C1"> FindPath</span><span style="color:#24292E">(grid, grid.StartRoom, grid.EndRoom);</span></span>
+<span class="line"><span style="color:#24292E">    path </span><span style="color:#D73A49">=</span><span style="color:#6F42C1"> OptimizePath</span><span style="color:#24292E">(path);</span></span>
+<span class="line"><span style="color:#6F42C1">    ConnectAdjacentRooms</span><span style="color:#24292E">(grid, path);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6F42C1">    PlaceDoors</span><span style="color:#24292E">(grid);</span></span>
+<span class="line"><span style="color:#6F42C1">    SpawnObjects</span><span style="color:#24292E">(grid);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    yield</span><span style="color:#D73A49"> return</span><span style="color:#005CC5"> null</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"></span></code></pre>
+<p>각 단계를 분리했기 때문에, 예를 들어 경로 탐색 알고리즘만 다른 걸로 교체하거나 Room 배치 규칙을 바꾸기 쉽다.</p>
+<h2 id="타일-연결-처리">타일 연결 처리</h2>
+<p>Room을 배치하고 나면 Room 내부 타일의 연결 정보를 갱신해야 한다. 인접한 Room의 경계 타일끼리 연결되도록 처리한다.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">void</span><span style="color:#6F42C1"> UpdateTileConnections</span><span style="color:#24292E">(</span><span style="color:#6F42C1">DungeonGrid</span><span style="color:#6F42C1"> grid</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#D73A49">    for</span><span style="color:#24292E"> (</span><span style="color:#D73A49">int</span><span style="color:#6F42C1"> x</span><span style="color:#D73A49"> =</span><span style="color:#005CC5"> 0</span><span style="color:#24292E">; x </span><span style="color:#D73A49">&#x3C;</span><span style="color:#24292E"> grid.Width; x</span><span style="color:#D73A49">++</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#D73A49">    for</span><span style="color:#24292E"> (</span><span style="color:#D73A49">int</span><span style="color:#6F42C1"> y</span><span style="color:#D73A49"> =</span><span style="color:#005CC5"> 0</span><span style="color:#24292E">; y </span><span style="color:#D73A49">&#x3C;</span><span style="color:#24292E"> grid.Height; y</span><span style="color:#D73A49">++</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">    {</span></span>
+<span class="line"><span style="color:#D73A49">        var</span><span style="color:#6F42C1"> tile</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> grid.</span><span style="color:#6F42C1">GetTile</span><span style="color:#24292E">(x, y);</span></span>
+<span class="line"><span style="color:#D73A49">        if</span><span style="color:#24292E"> (tile </span><span style="color:#D73A49">==</span><span style="color:#005CC5"> null</span><span style="color:#24292E">) </span><span style="color:#D73A49">continue</span><span style="color:#24292E">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#24292E">        tile.ConnectUp    </span><span style="color:#D73A49">=</span><span style="color:#24292E"> grid.</span><span style="color:#6F42C1">GetTile</span><span style="color:#24292E">(x, y </span><span style="color:#D73A49">+</span><span style="color:#005CC5"> 1</span><span style="color:#24292E">) </span><span style="color:#D73A49">!=</span><span style="color:#005CC5"> null</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#24292E">        tile.ConnectDown  </span><span style="color:#D73A49">=</span><span style="color:#24292E"> grid.</span><span style="color:#6F42C1">GetTile</span><span style="color:#24292E">(x, y </span><span style="color:#D73A49">-</span><span style="color:#005CC5"> 1</span><span style="color:#24292E">) </span><span style="color:#D73A49">!=</span><span style="color:#005CC5"> null</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#24292E">        tile.ConnectLeft  </span><span style="color:#D73A49">=</span><span style="color:#24292E"> grid.</span><span style="color:#6F42C1">GetTile</span><span style="color:#24292E">(x </span><span style="color:#D73A49">-</span><span style="color:#005CC5"> 1</span><span style="color:#24292E">, y) </span><span style="color:#D73A49">!=</span><span style="color:#005CC5"> null</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#24292E">        tile.ConnectRight </span><span style="color:#D73A49">=</span><span style="color:#24292E"> grid.</span><span style="color:#6F42C1">GetTile</span><span style="color:#24292E">(x </span><span style="color:#D73A49">+</span><span style="color:#005CC5"> 1</span><span style="color:#24292E">, y) </span><span style="color:#D73A49">!=</span><span style="color:#005CC5"> null</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#24292E">    }</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"></span></code></pre>
+<p>연결 정보가 완성되면 해당하는 타일 스프라이트를 선택해서 렌더링한다.</p>
+<hr>
+<p>다음 편에서는 길, 강, 언덕이 있는 <strong>야외지역 던전 생성</strong> 을 다룬다. 실내보다 훨씬 복잡하다.</p>  </div> </article>  </main> <!-- FOOTER --> <footer class="border-t border-[#e8ddd0] mt-16"> <div class="max-w-3xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#b0977a]"> <span>© 2026 grobiann</span> <span>Built with <a href="https://astro.build" class="hover:text-[#c07a2f] transition-colors">Astro</a> · Hosted on GitHub Pages</span> </div> </footer> </body></html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="ko" class="scroll-smooth"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="canonical" href="https://grobiann.github.io/ai-lab-notes/blog/2025-01-21-unity-poe-dungeon-2-outdoor/"><meta name="description" content="길·강·언덕이 뒤얽힌 야외지역을 절차적으로 생성하는 방법. Path 타입 설계, Voronoi 공간분할, Room 배치 Validation까지 정리한다."><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://grobiann.github.io/ai-lab-notes/blog/2025-01-21-unity-poe-dungeon-2-outdoor/"><meta property="og:title" content="[Unity] PathOfExile 따라하기 - 던전생성 #2: 야외지역"><meta property="og:description" content="길·강·언덕이 뒤얽힌 야외지역을 절차적으로 생성하는 방법. Path 타입 설계, Voronoi 공간분할, Room 배치 Validation까지 정리한다."><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="[Unity] PathOfExile 따라하기 - 던전생성 #2: 야외지역"><meta name="twitter:description" content="길·강·언덕이 뒤얽힌 야외지역을 절차적으로 생성하는 방법. Path 타입 설계, Voronoi 공간분할, Room 배치 Validation까지 정리한다."><link rel="icon" type="image/svg+xml" href="/ai-lab-notes/favicon.svg"><title>[Unity] PathOfExile 따라하기 - 던전생성 #2: 야외지역 · grobiann</title><link rel="stylesheet" href="/ai-lab-notes/_astro/about.D043qiqY.css"></head> <body class="bg-[#faf8f5] text-[#2c2416] font-sans antialiased min-h-screen flex flex-col"> <!-- NAV --> <header class="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur border-b border-[#e8ddd0]"> <nav class="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between"> <a href="/ai-lab-notes/" class="font-serif text-lg font-bold tracking-tight text-[#2c2416] hover:text-[#c07a2f] transition-colors">
+grobiann<em class="not-italic text-[#c07a2f]">.</em> </a> <ul class="flex items-center gap-1"> <li> <a href="/ai-lab-notes/blog/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#c07a2f] font-medium bg-[#fdf3e3]"> Blog </a> </li><li> <a href="/ai-lab-notes/projects/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#7a6a52] hover:text-[#2c2416] hover:bg-[#f5ead8]"> Projects </a> </li><li> <a href="/ai-lab-notes/about/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#7a6a52] hover:text-[#2c2416] hover:bg-[#f5ead8]"> About </a> </li> </ul> </nav> </header> <!-- CONTENT --> <main class="flex-1">  <article class="max-w-2xl mx-auto px-6 py-14"> <!-- Breadcrumb --> <div class="text-sm text-[#b0977a] mb-8"> <a href="/ai-lab-notes/blog/" class="hover:text-[#c07a2f] transition-colors">Blog</a> <span class="mx-2">›</span> <span class="text-[#7a6a52]">[Unity] PathOfExile 따라하기 - 던전생성 #2: 야외지역</span> </div> <!-- Header --> <header class="mb-10 pb-10 border-b border-[#e8ddd0]"> <div class="flex flex-wrap gap-2 mb-4"> <span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> Unity </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> C# </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> 절차적 생성 </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> PathOfExile 따라하기 </span> </div> <h1 class="font-serif text-3xl sm:text-4xl font-bold leading-tight tracking-tight text-[#1a1208] mb-4"> [Unity] PathOfExile 따라하기 - 던전생성 #2: 야외지역 </h1> <p class="text-[#7a6a52] text-base leading-relaxed mb-5">길·강·언덕이 뒤얽힌 야외지역을 절차적으로 생성하는 방법. Path 타입 설계, Voronoi 공간분할, Room 배치 Validation까지 정리한다.</p> <div class="text-sm text-[#b0977a] flex items-center gap-3"> <time datetime="2025-01-21T00:00:00.000Z">2025년 1월 21일</time>  </div> </header> <!-- Body --> <div class="prose prose-warm prose-lg max-w-none
+                prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
+                prose-a:text-[#c07a2f] prose-a:no-underline hover:prose-a:underline
+                prose-code:text-[#c07a2f] prose-code:bg-[#fdf3e3] prose-code:px-1 prose-code:rounded
+                prose-pre:bg-[#faf5ec] prose-pre:border prose-pre:border-[#e8ddd0]
+                prose-blockquote:border-[#d4b896] prose-blockquote:text-[#7a6a52]
+                prose-hr:border-[#e8ddd0]">  <p>실내 던전은 직사각형 방들을 연결하면 됐다. 야외지역은 훨씬 복잡하다. 꼬불꼬불한 길, 강, 언덕이 겹치고, 그 위에 보스 구역·웨이포인트 같은 방이 얹혀야 한다.</p>
+<h2 id="핵심-개념-path">핵심 개념: Path</h2>
+<p>야외지역 생성의 핵심은 <strong>Path</strong> 다. Path는 게임 오브젝트(타일, 장식물)를 어디에 어떤 방향으로 배치할지 결정하는 선 데이터다.</p>
+<p>Path에는 세 가지 타입이 있다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>타입</th><th>설명</th></tr></thead><tbody><tr><td><code>SinglePath</code></td><td>단선 — 좁은 길, 울타리 등</td></tr><tr><td><code>DoublePath</code></td><td>양선 — 너비가 있는 도로, 강 등</td></tr><tr><td><code>Outward</code></td><td>외향 — 언덕처럼 중심에서 바깥으로 퍼지는 형태</td></tr></tbody></table>
+<h2 id="7단계-생성-흐름">7단계 생성 흐름</h2>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. Path에 중간 점 추가      → 꼬불꼬불하게</span></span>
+<span class="line"><span>2. DoublePath로 분리         → 두 갈래 선으로 너비 표현</span></span>
+<span class="line"><span>3. 극단적 꺾임 완화          → 자연스러운 곡선</span></span>
+<span class="line"><span>4. 타일 타입 결정            → Path 경로에 타일 배치</span></span>
+<span class="line"><span>5. 고정 Room 배치            → 퀘스트, 웨이포인트, 보스</span></span>
+<span class="line"><span>6. 랜덤 Room으로 빈 영역 채움</span></span>
+<span class="line"><span>7. 타일 정보 기반 오브젝트 생성</span></span>
+<span class="line"><span></span></span></code></pre>
+<h2 id="path-꼬불꼬불하게">Path 꼬불꼬불하게</h2>
+<p>시작·종료 점을 직선으로 이으면 너무 단조롭다. 선분 중간에 랜덤 오프셋을 준 점을 재귀적으로 삽입하면 자연스러운 곡선이 된다.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6F42C1">List</span><span style="color:#24292E">&#x3C;</span><span style="color:#6F42C1">Vector2</span><span style="color:#24292E">> </span><span style="color:#6F42C1">SubdividePath</span><span style="color:#24292E">(</span><span style="color:#6F42C1">Vector2</span><span style="color:#6F42C1"> a</span><span style="color:#24292E">, </span><span style="color:#6F42C1">Vector2</span><span style="color:#6F42C1"> b</span><span style="color:#24292E">, </span><span style="color:#D73A49">int</span><span style="color:#6F42C1"> depth</span><span style="color:#24292E">, </span><span style="color:#D73A49">float</span><span style="color:#6F42C1"> spread</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#D73A49">    if</span><span style="color:#24292E"> (depth </span><span style="color:#D73A49">==</span><span style="color:#005CC5"> 0</span><span style="color:#24292E">) </span><span style="color:#D73A49">return</span><span style="color:#D73A49"> new</span><span style="color:#6F42C1"> List</span><span style="color:#24292E">&#x3C;</span><span style="color:#6F42C1">Vector2</span><span style="color:#24292E">> { b };</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6F42C1">    Vector2</span><span style="color:#6F42C1"> mid</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> (a </span><span style="color:#D73A49">+</span><span style="color:#24292E"> b) </span><span style="color:#D73A49">/</span><span style="color:#005CC5"> 2f</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#6F42C1">    Vector2</span><span style="color:#6F42C1"> perp</span><span style="color:#D73A49"> =</span><span style="color:#D73A49"> new</span><span style="color:#6F42C1"> Vector2</span><span style="color:#24292E">(</span><span style="color:#D73A49">-</span><span style="color:#24292E">(b </span><span style="color:#D73A49">-</span><span style="color:#24292E"> a).y, (b </span><span style="color:#D73A49">-</span><span style="color:#24292E"> a).x).normalized;</span></span>
+<span class="line"><span style="color:#24292E">    mid </span><span style="color:#D73A49">+=</span><span style="color:#24292E"> perp </span><span style="color:#D73A49">*</span><span style="color:#24292E"> Random.</span><span style="color:#6F42C1">Range</span><span style="color:#24292E">(</span><span style="color:#D73A49">-</span><span style="color:#24292E">spread, spread);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    var</span><span style="color:#6F42C1"> result</span><span style="color:#D73A49"> =</span><span style="color:#6F42C1"> SubdividePath</span><span style="color:#24292E">(a, mid, depth </span><span style="color:#D73A49">-</span><span style="color:#005CC5"> 1</span><span style="color:#24292E">, spread </span><span style="color:#D73A49">*</span><span style="color:#005CC5"> 0.5f</span><span style="color:#24292E">);</span></span>
+<span class="line"><span style="color:#24292E">    result.</span><span style="color:#6F42C1">AddRange</span><span style="color:#24292E">(</span><span style="color:#6F42C1">SubdividePath</span><span style="color:#24292E">(mid, b, depth </span><span style="color:#D73A49">-</span><span style="color:#005CC5"> 1</span><span style="color:#24292E">, spread </span><span style="color:#D73A49">*</span><span style="color:#005CC5"> 0.5f</span><span style="color:#24292E">));</span></span>
+<span class="line"><span style="color:#D73A49">    return</span><span style="color:#24292E"> result;</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"></span></code></pre>
+<h2 id="극단적-꺾임-완화">극단적 꺾임 완화</h2>
+<p>Path를 꼬불꼬불하게 만들다 보면 거의 180도로 꺾이는 구간이 생긴다. 이런 부분은 타일을 배치하기도 어렵고 플레이어가 이동하기도 이상하다.</p>
+<p>인접한 세 점 사이의 각도를 구해서 임계값 이하면 중간 점을 이동시킨다.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">void</span><span style="color:#6F42C1"> SmoothPath</span><span style="color:#24292E">(</span><span style="color:#6F42C1">List</span><span style="color:#24292E">&#x3C;</span><span style="color:#6F42C1">Vector2</span><span style="color:#24292E">> </span><span style="color:#6F42C1">points</span><span style="color:#24292E">, </span><span style="color:#D73A49">float</span><span style="color:#6F42C1"> minAngle</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#D73A49">    for</span><span style="color:#24292E"> (</span><span style="color:#D73A49">int</span><span style="color:#6F42C1"> i</span><span style="color:#D73A49"> =</span><span style="color:#005CC5"> 1</span><span style="color:#24292E">; i </span><span style="color:#D73A49">&#x3C;</span><span style="color:#24292E"> points.Count </span><span style="color:#D73A49">-</span><span style="color:#005CC5"> 1</span><span style="color:#24292E">; i</span><span style="color:#D73A49">++</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">    {</span></span>
+<span class="line"><span style="color:#6F42C1">        Vector2</span><span style="color:#6F42C1"> prev</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> points[i </span><span style="color:#D73A49">-</span><span style="color:#005CC5"> 1</span><span style="color:#24292E">];</span></span>
+<span class="line"><span style="color:#6F42C1">        Vector2</span><span style="color:#6F42C1"> curr</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> points[i];</span></span>
+<span class="line"><span style="color:#6F42C1">        Vector2</span><span style="color:#6F42C1"> next</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> points[i </span><span style="color:#D73A49">+</span><span style="color:#005CC5"> 1</span><span style="color:#24292E">];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">        float</span><span style="color:#6F42C1"> angle</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> Vector2.</span><span style="color:#6F42C1">Angle</span><span style="color:#24292E">(curr </span><span style="color:#D73A49">-</span><span style="color:#24292E"> prev, next </span><span style="color:#D73A49">-</span><span style="color:#24292E"> curr);</span></span>
+<span class="line"><span style="color:#D73A49">        if</span><span style="color:#24292E"> (angle </span><span style="color:#D73A49">&#x3C;</span><span style="color:#24292E"> minAngle)</span></span>
+<span class="line"><span style="color:#24292E">        {</span></span>
+<span class="line"><span style="color:#6A737D">            // 중간 점을 양쪽 점의 평균 방향으로 이동</span></span>
+<span class="line"><span style="color:#24292E">            points[i] </span><span style="color:#D73A49">=</span><span style="color:#24292E"> (prev </span><span style="color:#D73A49">+</span><span style="color:#24292E"> next) </span><span style="color:#D73A49">/</span><span style="color:#005CC5"> 2f</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#24292E">        }</span></span>
+<span class="line"><span style="color:#24292E">    }</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"></span></code></pre>
+<h2 id="voronoi로-교차점-처리">Voronoi로 교차점 처리</h2>
+<p>도로와 강이 교차하면 다리를 생성해야 한다. 교차 판정은 선분-선분 교점 공식으로 구한다.</p>
+<p>교차점 주변을 어느 Path에 귀속시킬지는 <strong>Voronoi 공간분할</strong> 로 처리한다. 각 격자 셀을 가장 가까운 Path에 귀속시키면 된다.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6F42C1">PathType</span><span style="color:#6F42C1"> GetDominantPath</span><span style="color:#24292E">(</span><span style="color:#6F42C1">Vector2Int</span><span style="color:#6F42C1"> cell</span><span style="color:#24292E">, </span><span style="color:#6F42C1">List</span><span style="color:#24292E">&#x3C;</span><span style="color:#6F42C1">Path</span><span style="color:#24292E">> </span><span style="color:#6F42C1">paths</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#D73A49">    float</span><span style="color:#6F42C1"> minDist</span><span style="color:#D73A49"> =</span><span style="color:#D73A49"> float</span><span style="color:#24292E">.MaxValue;</span></span>
+<span class="line"><span style="color:#6F42C1">    PathType</span><span style="color:#6F42C1"> result</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> PathType.None;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    foreach</span><span style="color:#24292E"> (</span><span style="color:#D73A49">var</span><span style="color:#6F42C1"> path</span><span style="color:#D73A49"> in</span><span style="color:#24292E"> paths)</span></span>
+<span class="line"><span style="color:#24292E">    {</span></span>
+<span class="line"><span style="color:#D73A49">        float</span><span style="color:#6F42C1"> dist</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> path.</span><span style="color:#6F42C1">DistanceTo</span><span style="color:#24292E">(cell);</span></span>
+<span class="line"><span style="color:#D73A49">        if</span><span style="color:#24292E"> (dist </span><span style="color:#D73A49">&#x3C;</span><span style="color:#24292E"> minDist)</span></span>
+<span class="line"><span style="color:#24292E">        {</span></span>
+<span class="line"><span style="color:#24292E">            minDist </span><span style="color:#D73A49">=</span><span style="color:#24292E"> dist;</span></span>
+<span class="line"><span style="color:#24292E">            result </span><span style="color:#D73A49">=</span><span style="color:#24292E"> path.Type;</span></span>
+<span class="line"><span style="color:#24292E">        }</span></span>
+<span class="line"><span style="color:#24292E">    }</span></span>
+<span class="line"><span style="color:#D73A49">    return</span><span style="color:#24292E"> result;</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"></span></code></pre>
+<h2 id="room-배치-validation">Room 배치 Validation</h2>
+<p>고정 Room(보스, 웨이포인트)을 배치할 때 기존 Path와 겹치면 안 된다. 랜덤 위치를 시도하고, 겹치면 다른 seed로 재시도한다.</p>
+<p>목표 지표: <strong>성공률 90% 이상, 처리시간 20ms 이내</strong></p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">bool</span><span style="color:#6F42C1"> TryPlaceRoom</span><span style="color:#24292E">(</span><span style="color:#6F42C1">Room</span><span style="color:#6F42C1"> room</span><span style="color:#24292E">, </span><span style="color:#6F42C1">DungeonGrid</span><span style="color:#6F42C1"> grid</span><span style="color:#24292E">, </span><span style="color:#D73A49">int</span><span style="color:#6F42C1"> maxAttempts</span><span style="color:#D73A49"> =</span><span style="color:#005CC5"> 50</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#D73A49">    for</span><span style="color:#24292E"> (</span><span style="color:#D73A49">int</span><span style="color:#6F42C1"> attempt</span><span style="color:#D73A49"> =</span><span style="color:#005CC5"> 0</span><span style="color:#24292E">; attempt </span><span style="color:#D73A49">&#x3C;</span><span style="color:#24292E"> maxAttempts; attempt</span><span style="color:#D73A49">++</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">    {</span></span>
+<span class="line"><span style="color:#6F42C1">        Vector2Int</span><span style="color:#6F42C1"> pos</span><span style="color:#D73A49"> =</span><span style="color:#6F42C1"> GetRandomPosition</span><span style="color:#24292E">(grid, room.Size);</span></span>
+<span class="line"><span style="color:#D73A49">        if</span><span style="color:#24292E"> (</span><span style="color:#D73A49">!</span><span style="color:#6F42C1">OverlapsPath</span><span style="color:#24292E">(room, pos, grid))</span></span>
+<span class="line"><span style="color:#24292E">        {</span></span>
+<span class="line"><span style="color:#6F42C1">            PlaceRoom</span><span style="color:#24292E">(room, pos, grid);</span></span>
+<span class="line"><span style="color:#D73A49">            return</span><span style="color:#005CC5"> true</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#24292E">        }</span></span>
+<span class="line"><span style="color:#24292E">    }</span></span>
+<span class="line"><span style="color:#D73A49">    return</span><span style="color:#005CC5"> false</span><span style="color:#24292E">; </span><span style="color:#6A737D">// 실패 → 상위에서 다른 seed로 재시도</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"></span></code></pre>
+<h2 id="타일-20여-종">타일 20여 종</h2>
+<p>야외지역 타일은 실내보다 훨씬 많다. DoublePath와 Outward 타입은 방향성이 있어서, 회전·Flip만으로는 모든 경우를 커버하지 못하는 케이스가 생긴다. 각 변을 3구간(L1·L2·L3, R1·R2·R3, U1<del>U3, B1</del>B3)으로 나눠 곡선 조합을 처리했다.</p>
+<p>결국 약 <strong>20여 종</strong>의 타일이 필요했다.</p>
+<hr>
+<p>다음 편은 Unity 프로파일러를 코드로 접근하는 방법이다.</p>  </div> </article>  </main> <!-- FOOTER --> <footer class="border-t border-[#e8ddd0] mt-16"> <div class="max-w-3xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#b0977a]"> <span>© 2026 grobiann</span> <span>Built with <a href="https://astro.build" class="hover:text-[#c07a2f] transition-colors">Astro</a> · Hosted on GitHub Pages</span> </div> </footer> </body></html>
