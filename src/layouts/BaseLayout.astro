@@ -13,7 +13,9 @@ let commitHash = 'unknown';
 let commitDate = '';
 try {
   commitHash = execSync('git log -1 --format="%h"').toString().trim();
-  commitDate = execSync('git log -1 --format="%cd" --date=format:"%Y-%m-%d %H:%M"').toString().trim();
+  const ts = parseInt(execSync('git log -1 --format="%ct"').toString().trim()) * 1000;
+  const kst = new Date(ts + 9 * 60 * 60 * 1000);
+  commitDate = kst.toISOString().slice(0, 16).replace('T', ' ') + ' KST';
 } catch {}
 const buildInfo = commitDate ? `${commitHash} · ${commitDate}` : commitHash;
 
