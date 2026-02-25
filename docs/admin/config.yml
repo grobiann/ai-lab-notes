@@ -1,7 +1,7 @@
 backend:
   name: github
   repo: grobiann/ai-lab-notes
-  branch: main
+  branch: claude/review-and-test-build-9Vy8z
 
 site_url: https://grobiann.github.io/ai-lab-notes
 
