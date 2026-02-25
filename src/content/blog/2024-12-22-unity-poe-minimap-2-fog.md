@@ -1,101 +1,131 @@
 ---
 title: "[Unity] PathOfExile 따라하기 - 미니맵 #2: 전장의 안개"
-description: "Color 배열과 가우시안 분포로 전장의 안개를 구현하고, 컴퓨트 셰이더로 성능을 0.53ms에서 0.01ms로 개선한 과정을 정리한다."
+description: "Color 배열과 가우시안 분포로 전장의 안개(Fog of War)를 구현하고, 컴퓨트 셰이더로 0.53ms에서 0.01ms로 개선한 과정을 정리한다."
 pubDate: 2024-12-22
 tags: ["Unity", "C#", "미니맵", "셰이더", "PathOfExile 따라하기"]
 ---
 
-지난 편에서 미니맵 기본 렌더링을 완성했다. 이번엔 디아블로류 게임의 상징인 **전장의 안개(Fog of War)** 를 구현한다.
+![전장의 안개 구현 결과](/ai-lab-notes/images/blog/poe-minimap-2-1.png)
 
-## 구현 방식 선택
+## 전장의 안개 (Fog of War)
 
-접근법은 크게 두 가지다.
+안개를 만드는데 고민해야 할 기능들:
+- 유닛 주위 반경 시야 처리
+- 이전 방문 지역 처리
+- 경계부분 smoothing
 
-- **메시 기반**: 안개를 3D 메시로 표현하고 미니맵 카메라에 잡히도록 배치
-- **텍스처 기반**: 맵 전체 크기의 텍스처를 CPU에서 픽셀 단위로 갱신
+## 개발 방법 선택
 
-텍스처 기반을 선택했다. 구현이 단순하고, 이후에 컴퓨트 셰이더로 GPU로 넘기기 쉽기 때문이다.
+![개발 방법 다이어그램](/ai-lab-notes/images/blog/poe-minimap-2-2.png)
 
-## 텍스처 갱신
+핵심 구현 방식:
+- `Color[]` 배열을 이용한 시야 처리
+- 가우시안 분포 기반 경계 smoothing
+- Shader에서 MainTex와 FogTex 혼합
 
-맵 전체 크기에 대응하는 `Color[]` 배열을 만들고, 캐릭터 위치 주변을 매 프레임 갱신한다.
+## C# - Reveal 함수
 
 ```csharp
-void Reveal(Vector2Int center, int radius)
+private Color32[] _fogPixels;
+
+public void Reveal(Texture2D texture, Vector3 position)
 {
-    for (int x = center.x - radius; x <= center.x + radius; x++)
-    for (int y = center.y - radius; y <= center.y + radius; y++)
+    int centerX = (int)(position.x / _tileSize);
+    int centerY = (int)(position.z / _tileSize);
+    float gridRevealRadius = RevealRadius / _tileSize;
+    float radiusSquared = gridRevealRadius * gridRevealRadius;
+
+    for (int y = centerY - (int)gridRevealRadius; y <= centerY + (int)gridRevealRadius; y++)
     {
-        float dx = x - center.x;
-        float dy = y - center.y;
-        float dist = Mathf.Sqrt(dx * dx + dy * dy);
-        if (dist > radius) continue;
+        for (int x = centerX - (int)gridRevealRadius; x <= centerX + (int)gridRevealRadius; x++)
+        {
+            int index = y * _textureSize + x;
+            if (index < 0 || index >= _fogPixels.Length)
+                continue;
 
-        // 경계부분을 부드럽게 처리
-        float t = dist / radius;
-        float alpha = Mathf.Clamp01(1f - t);
-        fogColors[y * mapWidth + x].a = Mathf.Min(fogColors[y * mapWidth + x].a, 1f - alpha);
+            float dx = x - centerX;
+            float dy = y - centerY;
+            float distanceSquared = dx * dx + dy * dy;
+            if (distanceSquared > radiusSquared)
+                continue;
+
+            float xValue = Mathf.Sqrt(distanceSquared / radiusSquared);
+            float alpha = Mathf.Clamp01(EdgeSharpness * (1 - xValue));
+            byte opacity = (byte)(255 * (1.0f - alpha));
+            byte prevOpacity = _fogPixels[index].a;
+
+            if (opacity < prevOpacity)
+            {
+                _fogPixels[index] = new Color32(0, 0, 0, opacity);
+            }
+        }
     }
-    fogTexture.SetPixels(fogColors);
-    fogTexture.Apply();
+
+    texture.SetPixels32(_fogPixels);
+    texture.Apply();
 }
 ```
 
-경계를 단순히 잘라내면 딱딱해 보인다. 거리 비율(t)로 알파값을 부드럽게 줄여서 가장자리가 자연스럽게 퍼지도록 했다.
+![Reveal 함수 적용 결과](/ai-lab-notes/images/blog/poe-minimap-2-3.png)
 
-## 셰이더로 혼합
-
-미니맵 텍스처와 안개 텍스처를 셰이더에서 합성한다.
+## HLSL - Fragment Shader (기본)
 
 ```hlsl
-float4 frag(v2f i) : SV_Target
+fixed4 frag (v2f i) : SV_Target
 {
-    float4 mapColor = tex2D(_MainTex, i.uv);
-    float4 fogColor = tex2D(_FogTex, i.uv);
+    half4 mainColor = tex2D(_MainTex, i.uv);
+    half4 fogColor = tex2D(_FogTex, i.uv);
 
-    // 가우시안 분포로 경계 처리
-    float fogAlpha = (exp(-pow(2.0 * fogColor.a - 1.0, 2.0)) - 0.37) * 1.59;
-    fogAlpha = saturate(fogAlpha);
+    if(fogColor.a > 0.0 && fogColor.a < 1.0)
+    {
+        half fogAlpha = (exp(-pow(2*fogColor.a-1, 2))-0.37)*1.59;
+        half4 fog = half4(0.0, 0.0, 1.0, fogAlpha*0.9);
+        mainColor *= (1 - fogColor.a* 2);
+        return mainColor + fog ;
+    }
 
-    return lerp(float4(0, 0, 0, 1), mapColor, fogAlpha);
+    mainColor.a = mainColor.a * (1 - fogColor.a);
+    return mainColor;
 }
 ```
 
-단순 선형 보간 대신 가우시안 분포를 쓰면 경계가 훨씬 부드럽다. PathOfExile 2에서 안개 가장자리가 자연스럽게 흐릿한 이유가 이것이다.
-
-## 성능 문제와 컴퓨트 셰이더
-
-512×512 텍스처 기준으로 `Reveal()` 하나에 **0.53ms** 가 걸렸다. 캐릭터가 여러 명이거나 시야 범위가 넓어지면 병목이 된다.
-
-컴퓨트 셰이더로 GPU에 연산을 넘겼다.
+## HLSL - Fragment Shader (NavMesh 적용)
 
 ```hlsl
-// FogReveal.compute
-#pragma kernel Reveal
-
-RWTexture2D<float4> FogTexture;
-float2 Center;
-float Radius;
-
-[numthreads(8, 8, 1)]
-void Reveal(uint3 id : SV_DispatchThreadID)
+fixed4 frag (v2f i) : SV_Target
 {
-    float2 pos = float2(id.xy);
-    float dist = length(pos - Center);
-    if (dist > Radius) return;
+    half4 mainColor = tex2D(_MainTex, i.uv);
+    half4 fogColor = tex2D(_FogTex, i.uv);
+    half4 movableColor = tex2D(_MovableTex, i.uv);
 
-    float t = dist / Radius;
-    float alpha = 1.0 - saturate(t);
-    FogTexture[id.xy] = min(FogTexture[id.xy], float4(1, 1, 1, 1 - alpha));
+    if (fogColor.a > 0.0 && fogColor.a < 1.0 && movableColor.r > 0)
+    {
+        half fogAlpha = (exp(-pow(2 * fogColor.a - 1, 2)) - 0.37) * 1.59;
+        half4 fog = half4(0.0, 0.0, 1.0, fogAlpha * 0.9);
+        mainColor *= (1 - fogColor.a * 2);
+        return mainColor + fog;
+    }
+
+    mainColor.a = mainColor.a * (1 - fogColor.a);
+    return mainColor;
 }
 ```
 
-결과: **0.53ms → 0.01ms**. 53배 향상됐다.
+![셰이더 적용 결과](/ai-lab-notes/images/blog/poe-minimap-2-4.png)
 
-## 메모리 사용량
+## 주요 계산식
 
-512×512 텍스처 3개(맵 원본, 안개 현재 상태, 누적 방문)를 사용하며 총 **약 3MB** 다. 실용적인 범위다.
+- 기본 경계 투명도: `clamp01(cof*(1-abs(x)))`
+- 가우시안 분포: `f(x) = (e^(-x²) - 0.37) × 1.59`
+- 셰이더용 수정식: `(e^(-(2x-1)²) - 0.37) × 1.59`
 
----
+## 최적화 - 컴퓨트 셰이더
 
-다음 편에서는 미니맵 위에 몬스터, 웨이포인트 등 **아이콘을 표시** 하는 기능을 구현한다.
+![NavMesh 이동 가능 영역 표시](/ai-lab-notes/images/blog/poe-minimap-2-5.png)
+
+- CPU 기반: **0.53ms** → 컴퓨트 셰이더 적용: **0.01ms**
+- 512×512 텍스처 3개 = 약 3MB
+
+![컴퓨트 셰이더 최적화 결과](/ai-lab-notes/images/blog/poe-minimap-2-6.png)
+
+다음 편에서는 미니맵 위에 오브젝트 **아이콘을 표시**하는 기능을 구현합니다.

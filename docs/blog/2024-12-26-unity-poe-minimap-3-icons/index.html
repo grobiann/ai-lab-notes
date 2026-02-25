@@ -1,75 +1,84 @@
-<!DOCTYPE html><html lang="ko" class="scroll-smooth"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="canonical" href="https://grobiann.github.io/ai-lab-notes/blog/2024-12-26-unity-poe-minimap-3-icons/"><meta name="description" content="미니맵에 몬스터·웨이포인트 아이콘을 표시하는 방법. 월드 좌표 → UV 좌표 변환, 전장의 안개 가시성 체크, 범위 밖 오브젝트 인디케이터 처리까지 정리한다."><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://grobiann.github.io/ai-lab-notes/blog/2024-12-26-unity-poe-minimap-3-icons/"><meta property="og:title" content="[Unity] PathOfExile 따라하기 - 미니맵 #3: 아이콘 표시"><meta property="og:description" content="미니맵에 몬스터·웨이포인트 아이콘을 표시하는 방법. 월드 좌표 → UV 좌표 변환, 전장의 안개 가시성 체크, 범위 밖 오브젝트 인디케이터 처리까지 정리한다."><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="[Unity] PathOfExile 따라하기 - 미니맵 #3: 아이콘 표시"><meta name="twitter:description" content="미니맵에 몬스터·웨이포인트 아이콘을 표시하는 방법. 월드 좌표 → UV 좌표 변환, 전장의 안개 가시성 체크, 범위 밖 오브젝트 인디케이터 처리까지 정리한다."><link rel="icon" type="image/svg+xml" href="/ai-lab-notes/favicon.svg"><title>[Unity] PathOfExile 따라하기 - 미니맵 #3: 아이콘 표시 · grobiann</title><link rel="stylesheet" href="/ai-lab-notes/_astro/about.DD62h54D.css"></head> <body class="bg-[#faf8f5] text-[#2c2416] font-sans antialiased min-h-screen flex flex-col"> <!-- NAV --> <header class="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur border-b border-[#e8ddd0]"> <nav class="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between"> <a href="/ai-lab-notes/" class="font-serif text-lg font-bold tracking-tight text-[#2c2416] hover:text-[#c07a2f] transition-colors">
-grobiann<em class="not-italic text-[#c07a2f]">.</em> </a> <ul class="flex items-center gap-1"> <li> <a href="/ai-lab-notes/blog/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#c07a2f] font-medium bg-[#fdf3e3]"> Blog </a> </li><li> <a href="/ai-lab-notes/projects/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#7a6a52] hover:text-[#2c2416] hover:bg-[#f5ead8]"> Projects </a> </li><li> <a href="/ai-lab-notes/about/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#7a6a52] hover:text-[#2c2416] hover:bg-[#f5ead8]"> About </a> </li> </ul> </nav> </header> <!-- CONTENT --> <main class="flex-1">  <article class="max-w-2xl mx-auto px-6 py-14"> <!-- Breadcrumb --> <div class="text-sm text-[#b0977a] mb-8"> <a href="/ai-lab-notes/blog/" class="hover:text-[#c07a2f] transition-colors">Blog</a> <span class="mx-2">›</span> <span class="text-[#7a6a52]">[Unity] PathOfExile 따라하기 - 미니맵 #3: 아이콘 표시</span> </div> <!-- Header --> <header class="mb-10 pb-10 border-b border-[#e8ddd0]"> <div class="flex flex-wrap gap-2 mb-4"> <span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> Unity </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> C# </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> 미니맵 </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> PathOfExile 따라하기 </span> </div> <h1 class="font-serif text-3xl sm:text-4xl font-bold leading-tight tracking-tight text-[#1a1208] mb-4"> [Unity] PathOfExile 따라하기 - 미니맵 #3: 아이콘 표시 </h1> <p class="text-[#7a6a52] text-base leading-relaxed mb-5">미니맵에 몬스터·웨이포인트 아이콘을 표시하는 방법. 월드 좌표 → UV 좌표 변환, 전장의 안개 가시성 체크, 범위 밖 오브젝트 인디케이터 처리까지 정리한다.</p> <div class="text-sm text-[#b0977a] flex items-center gap-3"> <time datetime="2024-12-26T00:00:00.000Z">2024년 12월 26일</time>  </div> </header> <!-- Body --> <div class="prose prose-warm prose-lg max-w-none
+<!DOCTYPE html><html lang="ko" class="scroll-smooth"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="canonical" href="https://grobiann.github.io/ai-lab-notes/blog/2024-12-26-unity-poe-minimap-3-icons/"><meta name="description" content="미니맵에 오브젝트 아이콘을 표시하는 방법. 월드 좌표 → UV 좌표 변환, 전장의 안개 가시성 체크, 범위 밖 오브젝트 인디케이터 처리까지 정리한다."><!-- Open Graph --><meta property="og:type" content="website"><meta property="og:url" content="https://grobiann.github.io/ai-lab-notes/blog/2024-12-26-unity-poe-minimap-3-icons/"><meta property="og:title" content="[Unity] PathOfExile 따라하기 - 미니맵 #3: 아이콘 표시"><meta property="og:description" content="미니맵에 오브젝트 아이콘을 표시하는 방법. 월드 좌표 → UV 좌표 변환, 전장의 안개 가시성 체크, 범위 밖 오브젝트 인디케이터 처리까지 정리한다."><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="[Unity] PathOfExile 따라하기 - 미니맵 #3: 아이콘 표시"><meta name="twitter:description" content="미니맵에 오브젝트 아이콘을 표시하는 방법. 월드 좌표 → UV 좌표 변환, 전장의 안개 가시성 체크, 범위 밖 오브젝트 인디케이터 처리까지 정리한다."><link rel="icon" type="image/svg+xml" href="/ai-lab-notes/favicon.svg"><title>[Unity] PathOfExile 따라하기 - 미니맵 #3: 아이콘 표시 · grobiann</title><link rel="stylesheet" href="/ai-lab-notes/_astro/about.B1QpAtzK.css"></head> <body class="bg-[#faf8f5] text-[#2c2416] font-sans antialiased min-h-screen flex flex-col"> <!-- NAV --> <header class="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur border-b border-[#e8ddd0]"> <nav class="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between"> <a href="/ai-lab-notes/" class="font-serif text-lg font-bold tracking-tight text-[#2c2416] hover:text-[#c07a2f] transition-colors">
+grobiann<em class="not-italic text-[#c07a2f]">.</em> </a> <ul class="flex items-center gap-1"> <li> <a href="/ai-lab-notes/blog/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#c07a2f] font-medium bg-[#fdf3e3]"> Blog </a> </li><li> <a href="/ai-lab-notes/projects/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#7a6a52] hover:text-[#2c2416] hover:bg-[#f5ead8]"> Projects </a> </li><li> <a href="/ai-lab-notes/about/" class="text-sm px-3 py-1.5 rounded-md transition-colors text-[#7a6a52] hover:text-[#2c2416] hover:bg-[#f5ead8]"> About </a> </li> </ul> </nav> </header> <!-- CONTENT --> <main class="flex-1">  <article class="max-w-2xl mx-auto px-6 py-14"> <!-- Breadcrumb --> <div class="text-sm text-[#b0977a] mb-8"> <a href="/ai-lab-notes/blog/" class="hover:text-[#c07a2f] transition-colors">Blog</a> <span class="mx-2">›</span> <span class="text-[#7a6a52]">[Unity] PathOfExile 따라하기 - 미니맵 #3: 아이콘 표시</span> </div> <!-- Header --> <header class="mb-10 pb-10 border-b border-[#e8ddd0]"> <div class="flex flex-wrap gap-2 mb-4"> <span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> Unity </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> C# </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> 미니맵 </span><span class="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"> PathOfExile 따라하기 </span> </div> <h1 class="font-serif text-3xl sm:text-4xl font-bold leading-tight tracking-tight text-[#1a1208] mb-4"> [Unity] PathOfExile 따라하기 - 미니맵 #3: 아이콘 표시 </h1> <p class="text-[#7a6a52] text-base leading-relaxed mb-5">미니맵에 오브젝트 아이콘을 표시하는 방법. 월드 좌표 → UV 좌표 변환, 전장의 안개 가시성 체크, 범위 밖 오브젝트 인디케이터 처리까지 정리한다.</p> <div class="text-sm text-[#b0977a] flex items-center gap-3"> <time datetime="2024-12-26T00:00:00.000Z">2024년 12월 26일</time>  </div> </header> <!-- Body --> <div class="prose prose-warm prose-lg max-w-none
                 prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
                 prose-a:text-[#c07a2f] prose-a:no-underline hover:prose-a:underline
                 prose-code:text-[#c07a2f] prose-code:bg-[#fdf3e3] prose-code:px-1 prose-code:rounded
                 prose-pre:bg-[#faf5ec] prose-pre:border prose-pre:border-[#e8ddd0]
                 prose-blockquote:border-[#d4b896] prose-blockquote:text-[#7a6a52]
-                prose-hr:border-[#e8ddd0]">  <p>미니맵 시리즈 마지막이다. 이번엔 몬스터, 웨이포인트, NPC 등 게임 오브젝트를 미니맵 위에 아이콘으로 표시한다.</p>
-<h2 id="동작-방식-정리">동작 방식 정리</h2>
-<p>PathOfExile 2 기준으로 아이콘 시스템의 규칙은 이렇다.</p>
+                prose-hr:border-[#e8ddd0]">  <p>최근 PathOfExile2(이하 poe2) 얼리엑세스가 출시되었습니다. 게임에 적용된 복잡해 보이는 기술들을 하나씩 따라해보려 합니다.</p>
+<p><img src="/ai-lab-notes/images/blog/poe-minimap-3-1.png" alt="미니맵 아이콘 표시 결과"></p>
+<h2 id="미니맵-아이콘-표시하기">미니맵 아이콘 표시하기</h2>
+<p>맵에는 여러 인터렉션 가능한 오브젝트가 있으며, 미니맵에서는 이를 아이콘으로 표현합니다.</p>
+<p><strong>개발 내용 분석</strong></p>
+<ol>
+<li>아이콘은 전장의 안개가 걷혔을 때에만 보여줍니다.</li>
+<li>지도의 두 가지 모드에 따라 다르게 표현됩니다.
 <ul>
-<li>전장의 안개가 걷힌 영역만 아이콘을 표시한다</li>
-<li>미니맵 범위 안이면 해당 위치에 아이콘 표시</li>
-<li>미니맵 범위 밖이면 테두리 위에 인디케이터(방향 표시)로 보여준다</li>
-<li>전체화면 모드와 미니맵 모드에서 아이콘 크기/종류가 다를 수 있다</li>
+<li>전체화면모드: 실제 지도 위치에 고정</li>
+<li>미니맵모드: 거리에 따라 indicator 또는 투명도 조정</li>
 </ul>
-<h2 id="아이콘-데이터-구조">아이콘 데이터 구조</h2>
-<p>각 오브젝트가 미니맵에 어떻게 표시될지 정보를 담는 클래스를 만든다.</p>
+</li>
+</ol>
+<h2 id="개발-순서">개발 순서</h2>
+<ol>
+<li>각 오브젝트의 uv좌표 구하기</li>
+<li>전장의 안개 여부 확인하기</li>
+<li>Rect 범위 내 아이콘 표시</li>
+</ol>
+<h2 id="오브젝트의-uv좌표-구하기">오브젝트의 uv좌표 구하기</h2>
 <pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">public</span><span style="color:#D73A49"> class</span><span style="color:#6F42C1"> MinimapIconAttribute</span></span>
 <span class="line"><span style="color:#24292E">{</span></span>
-<span class="line"><span style="color:#D73A49">    public</span><span style="color:#6F42C1"> Vector2</span><span style="color:#6F42C1"> Offset</span><span style="color:#24292E">;        </span><span style="color:#6A737D">// 아이콘 위치 보정</span></span>
-<span class="line"><span style="color:#D73A49">    public</span><span style="color:#D73A49"> bool</span><span style="color:#6F42C1"> IsPublic</span><span style="color:#24292E">;         </span><span style="color:#6A737D">// 전체화면에서도 보이는지</span></span>
-<span class="line"><span style="color:#D73A49">    public</span><span style="color:#6F42C1"> Sprite</span><span style="color:#6F42C1"> IconSprite</span><span style="color:#24292E">;     </span><span style="color:#6A737D">// 표시할 스프라이트</span></span>
+<span class="line"><span style="color:#D73A49">    public</span><span style="color:#6F42C1"> Vector2</span><span style="color:#6F42C1"> position</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#D73A49">    public</span><span style="color:#D73A49"> bool</span><span style="color:#6F42C1"> revealed</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#D73A49">    public</span><span style="color:#6F42C1"> Sprite</span><span style="color:#6F42C1"> icon</span><span style="color:#24292E">;</span></span>
 <span class="line"><span style="color:#24292E">}</span></span>
 <span class="line"></span></code></pre>
-<p>오브젝트마다 이 컴포넌트를 달아두면 미니맵 매니저가 순회하며 처리한다.</p>
-<h2 id="월드-좌표--uv-좌표-변환">월드 좌표 → UV 좌표 변환</h2>
-<p>미니맵은 텍스처 UV 공간에서 동작한다. 월드 좌표를 UV로 변환하는 공식이 핵심이다.</p>
-<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6F42C1">Vector2</span><span style="color:#6F42C1"> WorldToUV</span><span style="color:#24292E">(</span><span style="color:#6F42C1">Vector3</span><span style="color:#6F42C1"> worldPos</span><span style="color:#24292E">)</span></span>
-<span class="line"><span style="color:#24292E">{</span></span>
-<span class="line"><span style="color:#6A737D">    // tileSize: 타일 한 칸의 월드 크기</span></span>
-<span class="line"><span style="color:#6A737D">    // MapSize: 맵 전체 타일 수</span></span>
-<span class="line"><span style="color:#D73A49">    float</span><span style="color:#6F42C1"> uvX</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> worldPos.x </span><span style="color:#D73A49">/</span><span style="color:#24292E"> (MapSize.x </span><span style="color:#D73A49">*</span><span style="color:#24292E"> tileSize);</span></span>
-<span class="line"><span style="color:#D73A49">    float</span><span style="color:#6F42C1"> uvY</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> worldPos.z </span><span style="color:#D73A49">/</span><span style="color:#24292E"> (MapSize.y </span><span style="color:#D73A49">*</span><span style="color:#24292E"> tileSize);</span></span>
-<span class="line"><span style="color:#D73A49">    return</span><span style="color:#D73A49"> new</span><span style="color:#6F42C1"> Vector2</span><span style="color:#24292E">(uvX, uvY);</span></span>
-<span class="line"><span style="color:#24292E">}</span></span>
-<span class="line"></span></code></pre>
-<p>이 UV 좌표를 미니맵 RectTransform 크기에 곱하면 스크린 위치를 구할 수 있다.</p>
-<h2 id="전장의-안개-체크">전장의 안개 체크</h2>
-<p>아이콘을 표시하기 전에 해당 위치가 안개가 걷혔는지 확인한다.</p>
-<p>방법 1 — <strong>거리 기반</strong>: 캐릭터와 오브젝트 간 거리를 계산해 시야 범위 안이면 표시.</p>
-<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">bool</span><span style="color:#6F42C1"> IsVisible</span><span style="color:#24292E">(</span><span style="color:#6F42C1">Vector3</span><span style="color:#6F42C1"> objPos</span><span style="color:#24292E">)</span></span>
-<span class="line"><span style="color:#24292E">{</span></span>
-<span class="line"><span style="color:#D73A49">    float</span><span style="color:#6F42C1"> dist</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> Vector3.</span><span style="color:#6F42C1">Distance</span><span style="color:#24292E">(playerPos, objPos);</span></span>
-<span class="line"><span style="color:#D73A49">    return</span><span style="color:#24292E"> dist </span><span style="color:#D73A49">&#x3C;=</span><span style="color:#24292E"> visionRadius;</span></span>
-<span class="line"><span style="color:#24292E">}</span></span>
-<span class="line"></span></code></pre>
-<p>방법 2 — <strong>컴퓨트 셰이더 결과 활용</strong>: 이전 편에서 만든 안개 텍스처의 해당 픽셀 알파값을 읽는다.</p>
-<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">bool</span><span style="color:#6F42C1"> IsVisible</span><span style="color:#24292E">(</span><span style="color:#6F42C1">Vector2Int</span><span style="color:#6F42C1"> uvPixel</span><span style="color:#24292E">)</span></span>
-<span class="line"><span style="color:#24292E">{</span></span>
-<span class="line"><span style="color:#6F42C1">    Color</span><span style="color:#6F42C1"> fogSample</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> fogTexture.</span><span style="color:#6F42C1">GetPixel</span><span style="color:#24292E">(uvPixel.x, uvPixel.y);</span></span>
-<span class="line"><span style="color:#D73A49">    return</span><span style="color:#24292E"> fogSample.a </span><span style="color:#D73A49">&#x3C;</span><span style="color:#005CC5"> 0.5f</span><span style="color:#24292E">; </span><span style="color:#6A737D">// 안개가 충분히 걷힌 경우</span></span>
-<span class="line"><span style="color:#24292E">}</span></span>
-<span class="line"></span></code></pre>
-<p>텍스처를 읽는 방식이 조금 더 정확하지만 <code>GetPixel</code>은 비용이 있다. 오브젝트 수가 많다면 거리 기반으로 먼저 걸러내는 게 낫다.</p>
-<h2 id="범위-밖-오브젝트--인디케이터">범위 밖 오브젝트 — 인디케이터</h2>
-<p>미니맵 Rect 바깥에 있는 오브젝트는 아이콘 대신 테두리에 방향 인디케이터를 표시한다.</p>
-<p>사각형 경계와 캐릭터→오브젝트 선분의 교점을 구하는 방식으로 위치를 계산했다.</p>
-<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6F42C1">Vector2</span><span style="color:#6F42C1"> ClampToRect</span><span style="color:#24292E">(</span><span style="color:#6F42C1">Vector2</span><span style="color:#6F42C1"> origin</span><span style="color:#24292E">, </span><span style="color:#6F42C1">Vector2</span><span style="color:#6F42C1"> target</span><span style="color:#24292E">, </span><span style="color:#6F42C1">Rect</span><span style="color:#6F42C1"> rect</span><span style="color:#24292E">)</span></span>
-<span class="line"><span style="color:#24292E">{</span></span>
-<span class="line"><span style="color:#6F42C1">    Vector2</span><span style="color:#6F42C1"> dir</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> (target </span><span style="color:#D73A49">-</span><span style="color:#24292E"> origin).normalized;</span></span>
-<span class="line"><span style="color:#D73A49">    float</span><span style="color:#6F42C1"> tMin</span><span style="color:#D73A49"> =</span><span style="color:#D73A49"> float</span><span style="color:#24292E">.MaxValue;</span></span>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">float</span><span style="color:#6F42C1"> WorldToUV</span><span style="color:#D73A49"> =</span><span style="color:#005CC5"> 1.0f</span><span style="color:#D73A49"> /</span><span style="color:#24292E"> _map.MapSize </span><span style="color:#D73A49">/</span><span style="color:#24292E"> _tileSize;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#6A737D">    // 사각형 4변과의 교점 중 가장 가까운 것</span></span>
-<span class="line"><span style="color:#6F42C1">    TryIntersect</span><span style="color:#24292E">(origin, dir, rect.xMin, </span><span style="color:#005CC5">true</span><span style="color:#24292E">, </span><span style="color:#D73A49">ref</span><span style="color:#24292E"> tMin);</span></span>
-<span class="line"><span style="color:#6F42C1">    TryIntersect</span><span style="color:#24292E">(origin, dir, rect.xMax, </span><span style="color:#005CC5">true</span><span style="color:#24292E">, </span><span style="color:#D73A49">ref</span><span style="color:#24292E"> tMin);</span></span>
-<span class="line"><span style="color:#6F42C1">    TryIntersect</span><span style="color:#24292E">(origin, dir, rect.yMin, </span><span style="color:#005CC5">false</span><span style="color:#24292E">, </span><span style="color:#D73A49">ref</span><span style="color:#24292E"> tMin);</span></span>
-<span class="line"><span style="color:#6F42C1">    TryIntersect</span><span style="color:#24292E">(origin, dir, rect.yMax, </span><span style="color:#005CC5">false</span><span style="color:#24292E">, </span><span style="color:#D73A49">ref</span><span style="color:#24292E"> tMin);</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#D73A49">    return</span><span style="color:#24292E"> origin </span><span style="color:#D73A49">+</span><span style="color:#24292E"> dir </span><span style="color:#D73A49">*</span><span style="color:#24292E"> tMin;</span></span>
+<span class="line"><span style="color:#D73A49">public</span><span style="color:#6F42C1"> Vector2</span><span style="color:#6F42C1"> WorldPositonToUV</span><span style="color:#24292E">(</span><span style="color:#6F42C1">Vector3</span><span style="color:#6F42C1"> worldPosition</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#D73A49">    float</span><span style="color:#6F42C1"> x</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> worldPosition.x </span><span style="color:#D73A49">*</span><span style="color:#24292E"> WorldToUV;</span></span>
+<span class="line"><span style="color:#D73A49">    float</span><span style="color:#6F42C1"> y</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> worldPosition.z </span><span style="color:#D73A49">*</span><span style="color:#24292E"> WorldToUV;</span></span>
+<span class="line"><span style="color:#D73A49">    return</span><span style="color:#D73A49"> new</span><span style="color:#6F42C1"> Vector2</span><span style="color:#24292E">(x, y);</span></span>
 <span class="line"><span style="color:#24292E">}</span></span>
 <span class="line"></span></code></pre>
-<p>교점에 아이콘을 작게 배치하고 방향을 향해 회전시키면 인디케이터처럼 보인다.</p>
-<hr>
-<p>미니맵 시리즈는 여기서 마무리다. 다음 편부터는 <strong>절차적 던전 생성</strong> 으로 넘어간다.</p>  </div> </article>  </main> <!-- FOOTER --> <footer class="border-t border-[#e8ddd0] mt-16"> <div class="max-w-3xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#b0977a]"> <span>© 2026 grobiann</span> <div class="flex items-center gap-4"> <span>Built with <a href="https://astro.build" class="hover:text-[#c07a2f] transition-colors">Astro</a> · Hosted on GitHub Pages</span> <code class="text-xs text-[#d4b896] font-mono" title="빌드 커밋">e437f5d · 2026-02-25 22:27 KST</code> <a href="/ai-lab-notes/admin/" class="text-[#d4b896] hover:text-[#c07a2f] transition-colors">Admin</a> </div> </div> </footer> </body></html>
+<p><img src="/ai-lab-notes/images/blog/poe-minimap-3-2.png" alt="UV Rect 설명"></p>
+<h2 id="전장의-안개가-걷혀졌는지-확인">전장의 안개가 걷혀졌는지 확인</h2>
+<p><strong>방법 1: 거리 비교</strong></p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#D73A49">private</span><span style="color:#D73A49"> void</span><span style="color:#6F42C1"> UpdateIconReveal</span><span style="color:#24292E">(</span><span style="color:#6F42C1">MinimapIconAttribute</span><span style="color:#6F42C1"> icon</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#D73A49">    if</span><span style="color:#24292E"> (icon.revealed)</span></span>
+<span class="line"><span style="color:#D73A49">        return</span><span style="color:#24292E">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    foreach</span><span style="color:#24292E"> (</span><span style="color:#6F42C1">Transform</span><span style="color:#6F42C1"> agent</span><span style="color:#D73A49"> in</span><span style="color:#24292E"> _fogAgents)</span></span>
+<span class="line"><span style="color:#24292E">    {</span></span>
+<span class="line"><span style="color:#6F42C1">        Vector2</span><span style="color:#6F42C1"> agentPosition</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> agent.position;</span></span>
+<span class="line"><span style="color:#6F42C1">        Vector2</span><span style="color:#6F42C1"> iconPosition</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> icon.position;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">        float</span><span style="color:#6F42C1"> distance</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> Vector3.</span><span style="color:#6F42C1">Distance</span><span style="color:#24292E">(agentPosition, iconPosition);</span></span>
+<span class="line"><span style="color:#D73A49">        if</span><span style="color:#24292E"> (distance </span><span style="color:#D73A49">&#x3C;</span><span style="color:#24292E"> _fogDrawer.RevealRadius)</span></span>
+<span class="line"><span style="color:#24292E">        {</span></span>
+<span class="line"><span style="color:#24292E">            icon.revealed </span><span style="color:#D73A49">=</span><span style="color:#005CC5"> true</span><span style="color:#24292E">;</span></span>
+<span class="line"><span style="color:#24292E">        }</span></span>
+<span class="line"><span style="color:#24292E">    }</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"></span></code></pre>
+<p><strong>방법 2: 컴퓨트 셰이더 결과 활용</strong></p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6F42C1">RenderTexture</span><span style="color:#6F42C1"> currentRT</span><span style="color:#D73A49"> =</span><span style="color:#24292E"> RenderTexture.active;</span></span>
+<span class="line"><span style="color:#24292E">RenderTexture.active </span><span style="color:#D73A49">=</span><span style="color:#24292E"> renderTexture;</span></span>
+<span class="line"><span style="color:#24292E">texture2D.</span><span style="color:#6F42C1">ReadPixels</span><span style="color:#24292E">(</span><span style="color:#D73A49">new</span><span style="color:#6F42C1"> Rect</span><span style="color:#24292E">(</span><span style="color:#005CC5">0</span><span style="color:#24292E">, </span><span style="color:#005CC5">0</span><span style="color:#24292E">, width, height), </span><span style="color:#005CC5">0</span><span style="color:#24292E">, </span><span style="color:#005CC5">0</span><span style="color:#24292E">);</span></span>
+<span class="line"><span style="color:#24292E">texture2D.</span><span style="color:#6F42C1">Apply</span><span style="color:#24292E">();</span></span>
+<span class="line"><span style="color:#24292E">RenderTexture.active </span><span style="color:#D73A49">=</span><span style="color:#24292E"> currentRT;</span></span>
+<span class="line"></span></code></pre>
+<h2 id="미니맵-모드에서-rect-범위-내-아이콘-표시">미니맵 모드에서 Rect 범위 내 아이콘 표시</h2>
+<p><img src="/ai-lab-notes/images/blog/poe-minimap-3-3.png" alt="Indicator 방향 표시"></p>
+<ul>
+<li>아이콘이 UVRect 내부: 해당 위치에 그대로 표현</li>
+<li>아이콘이 UVRect 외부: 사각형 내부 위치로 변환 표현 (padding 포함)</li>
+</ul>
+<p>사각형 경계 외부에 있는 오브젝트는 테두리에 인디케이터로 방향을 표시합니다. 선분과 사각형의 교점을 구하는 방법으로 위치를 계산합니다.</p>
+<h2 id="참고자료">참고자료</h2>
+<ul>
+<li><a href="https://inyongs.tistory.com/29">[Unity 2D] Indicator</a></li>
+<li><a href="https://velog.io/@sehoon/SegmentIntersection">[게임수학] 선분의 교점 구하기</a></li>
+</ul>  </div> </article>  </main> <!-- FOOTER --> <footer class="border-t border-[#e8ddd0] mt-16"> <div class="max-w-3xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#b0977a]"> <span>© 2026 grobiann</span> <div class="flex items-center gap-4"> <span>Built with <a href="https://astro.build" class="hover:text-[#c07a2f] transition-colors">Astro</a> · Hosted on GitHub Pages</span> <code class="text-xs text-[#d4b896] font-mono" title="빌드 커밋">eee0de1 · 2026-02-25 22:27 KST</code> <a href="/ai-lab-notes/admin/" class="text-[#d4b896] hover:text-[#c07a2f] transition-colors">Admin</a> </div> </div> </footer> </body></html>

@@ -5,96 +5,51 @@ pubDate: 2025-01-10
 tags: ["Unity", "C#", "절차적 생성", "PathOfExile 따라하기"]
 ---
 
-PathOfExile은 매 게임마다 새로운 던전이 생성된다. 직접 구현해보기로 했다. 이번 편은 실내 던전(폐쇄된 방들이 이어진 형태)이다.
+![던전 생성 결과물](/ai-lab-notes/images/blog/poe-dungeon-1-1.png)
 
-## 구성 요소
+## 개요
 
-던전은 세 가지 단위로 이루어진다.
+게임 던전 제작의 여러 방법 중 절차적 생성을 활용합니다. Path of Exile은 "타일의 랜덤성"과 "던전 진행경로의 랜덤성"을 적용합니다.
 
-- **타일**: 1×1 격자 한 칸. 주변 타일과 연결 관계를 가진다
-- **Room**: 1×1 ~ N×M 직사각형. 여러 타일로 구성
-- **던전**: 여러 Room의 집합
+- **타일 기반 생성**: 적은 리소스로 다양한 던전, 동일 머테리얼 사용으로 드로우콜 감소, 빠른 제작 시간
+- **Layout 기반 생성**: 중요 오브젝트 배치 제어, 밸런스 관리 용이
 
-## 타일 설계
+**구성 요소**
+- 타일: 정사각형 한 칸
+- Room: 1x1~NxM 직사각형, 다수 타일로 구성
+- 던전: 여러 Room의 그룹
 
-타일은 상·하·좌·우 4방향의 연결 여부로 정의된다. 4방향 각각이 열림/닫힘이므로 조합은 2⁴ = 16가지지만, 회전과 Flip을 활용하면 실제로 필요한 스프라이트는 훨씬 적다.
+## 타일
 
-Unity의 Rule Tile과 비슷하지만, 직접 만들면 Walkable 정보 등 커스텀 데이터를 타일에 담을 수 있다. 타일을 회전·Flip할 때 Walkable 정보도 함께 변환해야 한다.
+타일은 주변 타일과의 "연결관계"를 가집니다. 던전 타일은 인접한 벽 타일 정보를 포함합니다. 4개 방향(위, 아래, 좌, 우) 연결로 회전/플립 시 4가지 연결 패턴만 존재합니다. 타일 배치 시 이름/키가 아닌 연결관계로 결정되므로, 동일 연결관계의 모든 타일이 나올 수 있습니다.
 
-## Room 구성
+![타일 연결관계 설명](/ai-lab-notes/images/blog/poe-dungeon-1-2.png)
 
-Room은 Tilemap2D를 활용해 프리팹으로 제작한다.
+## Room
 
-```csharp
-public class Room
-{
-    public int Width;
-    public int Height;
-    public TileBase[,] Tiles;
-    public bool[,] Walkable;
-    public RoomType Type; // Start, End, Normal, Boss 등
-}
-```
+Room은 타일의 연결관계만 정의하여 런타임에 동적으로 생성합니다. Unity Tilemap2D로 벽 위치를 설정하고, 초록색 점은 인접 Room과의 문 위치입니다. 벽 위치에 따라 랜덤 타일을 생성하며, 회전/플립 시 "Walkable 정보"를 수정합니다.
 
-Room에는 타일 데이터 외에 어떤 종류인지(`RoomType`)도 담는다. 시작·종료 Room, 보스 Room은 특정 위치에 고정 배치하고, 나머지는 랜덤으로 채운다.
+![Room 구조 설명](/ai-lab-notes/images/blog/poe-dungeon-1-3.png)
 
-## 8단계 생성 알고리즘
+## 던전
 
-던전을 생성하는 순서다.
+다양한 크기의 Room들을 배치하여 생성합니다.
 
-1. **던전 크기 결정**: 난이도·챕터에 따라 격자 크기를 설정
-2. **시작·종료 위치 배치**: 일정 거리 이상 떨어지도록 배치
-3. **Room 랜덤 배치**: 겹치지 않게 랜덤 위치에 Room을 배치
-4. **최단경로 탐색**: 시작 → 종료 Room까지 BFS로 경로를 찾는다
-5. **경로 최적화**: 경로에서 불필요하게 꺾이는 구간을 제거
-6. **인접 Room 추가**: 경로 주변 방들을 연결해 탐험 공간을 넓힌다
-7. **문 생성**: Room 사이 경계에 문을 배치
-8. **오브젝트 배치**: 타일 정보 기반으로 가구·장애물 등을 스폰
+![던전 생성 알고리즘 흐름](/ai-lab-notes/images/blog/poe-dungeon-1-4.png)
 
-```csharp
-IEnumerator GenerateDungeon(DungeonConfig config)
-{
-    var grid = new DungeonGrid(config.Width, config.Height);
+**던전 생성 알고리즘**
 
-    PlaceStartAndEnd(grid, config);
-    PlaceRoomsRandom(grid, config);
+1. 던전 크기 설정
+2. 시작(1x1)과 종료(1x1) 위치 설정
+3. 여백에 NxM 크기 Room 랜덤 배치
+4. 각 Room의 통과 비용 설정
+5. 최소 비용 경로 탐색
+6. 경로 외 Room 제거
+7. 경로 인접 Room 추가
+8. Room 간 문 추가
 
-    var path = FindPath(grid, grid.StartRoom, grid.EndRoom);
-    path = OptimizePath(path);
-    ConnectAdjacentRooms(grid, path);
+![던전 생성 단계별 과정](/ai-lab-notes/images/blog/poe-dungeon-1-5.png)
 
-    PlaceDoors(grid);
-    SpawnObjects(grid);
+![최종 던전 결과물](/ai-lab-notes/images/blog/poe-dungeon-1-6.png)
 
-    yield return null;
-}
-```
-
-각 단계를 분리했기 때문에, 예를 들어 경로 탐색 알고리즘만 다른 걸로 교체하거나 Room 배치 규칙을 바꾸기 쉽다.
-
-## 타일 연결 처리
-
-Room을 배치하고 나면 Room 내부 타일의 연결 정보를 갱신해야 한다. 인접한 Room의 경계 타일끼리 연결되도록 처리한다.
-
-```csharp
-void UpdateTileConnections(DungeonGrid grid)
-{
-    for (int x = 0; x < grid.Width; x++)
-    for (int y = 0; y < grid.Height; y++)
-    {
-        var tile = grid.GetTile(x, y);
-        if (tile == null) continue;
-
-        tile.ConnectUp    = grid.GetTile(x, y + 1) != null;
-        tile.ConnectDown  = grid.GetTile(x, y - 1) != null;
-        tile.ConnectLeft  = grid.GetTile(x - 1, y) != null;
-        tile.ConnectRight = grid.GetTile(x + 1, y) != null;
-    }
-}
-```
-
-연결 정보가 완성되면 해당하는 타일 스프라이트를 선택해서 렌더링한다.
-
----
-
-다음 편에서는 길, 강, 언덕이 있는 **야외지역 던전 생성** 을 다룬다. 실내보다 훨씬 복잡하다.
+다음 편에서는 길, 강, 언덕이 있는 **야외지역 던전 생성**을 다룹니다.

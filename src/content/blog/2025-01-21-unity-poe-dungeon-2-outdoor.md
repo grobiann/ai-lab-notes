@@ -5,129 +5,75 @@ pubDate: 2025-01-21
 tags: ["Unity", "C#", "절차적 생성", "PathOfExile 따라하기"]
 ---
 
-실내 던전은 직사각형 방들을 연결하면 됐다. 야외지역은 훨씬 복잡하다. 꼬불꼬불한 길, 강, 언덕이 겹치고, 그 위에 보스 구역·웨이포인트 같은 방이 얹혀야 한다.
+아래 내용은 poe 공식 유튜브의 내용을 참고하여 제작하였습니다.
+- https://www.youtube.com/watch?v=GcM9Ynfzll0
+- https://www.youtube.com/watch?v=EXnoHTqO7TE
 
-## 핵심 개념: Path
+![야외지역 던전 결과물](/ai-lab-notes/images/blog/poe-dungeon-2-1.png)
 
-야외지역 생성의 핵심은 **Path** 다. Path는 게임 오브젝트(타일, 장식물)를 어디에 어떤 방향으로 배치할지 결정하는 선 데이터다.
+## 개요
 
-Path에는 세 가지 타입이 있다.
+야외지역 맵을 절차적으로 생성해보았습니다. 실내지역에서 설명한 것처럼, 절차적으로 던전을 생성하게 되면 매번 플레이시 새로운 느낌을 줄 수 있습니다. 야외지역에서도 '방'이라는 개념을 사용하지만, 벽이 있는 어떤 공간이라기보다는 야외에 배치하는 장애물 정도로 생각하면 좋을 것 같습니다.
 
-| 타입 | 설명 |
-|------|------|
-| `SinglePath` | 단선 — 좁은 길, 울타리 등 |
-| `DoublePath` | 양선 — 너비가 있는 도로, 강 등 |
-| `Outward` | 외향 — 언덕처럼 중심에서 바깥으로 퍼지는 형태 |
+## 던전 생성 단계
 
-## 7단계 생성 흐름
+절차적으로 던전을 생성하는 과정에서, 여러 컨텐츠 위치를 관리하기 위해 사전에 정의된 레이아웃을 이용합니다. 레이아웃에는 `길, 강, 벽, 언덕, 장애물, 퀘스트, 보스, 웨이포인트, 출입구` 등의 정보를 담고 있습니다.
 
-```
-1. Path에 중간 점 추가      → 꼬불꼬불하게
-2. DoublePath로 분리         → 두 갈래 선으로 너비 표현
-3. 극단적 꺾임 완화          → 자연스러운 곡선
-4. 타일 타입 결정            → Path 경로에 타일 배치
-5. 고정 Room 배치            → 퀘스트, 웨이포인트, 보스
-6. 랜덤 Room으로 빈 영역 채움
-7. 타일 정보 기반 오브젝트 생성
-```
+> 1. Path 꼬불꼬불하게 만들기 위해 중간에 점 추가
+> 2. 너비가 있는 Path를 두 갈래 길로 분리
+> 3. 경로의 뾰족하고 극단적인 부분을 부드럽게 완화 (Smooth)
+> 4. Path가 지나가는 경로에 타일 타입 적용
+> 5. 사전 정의된 방 배치 (퀘스트, 웨이포인트, 보스 등)
+> 6. 빈 영역을 랜덤 방으로 채우기
+> 7. 각 타일 정보에 따라 타일 오브젝트 생성
 
-## Path 꼬불꼬불하게
+![던전 생성 단계 다이어그램](/ai-lab-notes/images/blog/poe-dungeon-2-2.png)
 
-시작·종료 점을 직선으로 이으면 너무 단조롭다. 선분 중간에 랜덤 오프셋을 준 점을 재귀적으로 삽입하면 자연스러운 곡선이 된다.
+## Path
 
-```csharp
-List<Vector2> SubdividePath(Vector2 a, Vector2 b, int depth, float spread)
-{
-    if (depth == 0) return new List<Vector2> { b };
+게임 내 오브젝트가 생성되는 일련의 위치 정보를 path라고 표현하였습니다. path가 사용되는 예시로는 `길, 강, 벽, 언덕`이 있습니다. path는 `SinglePath, DoublePath, Outward` 타입이 있습니다.
 
-    Vector2 mid = (a + b) / 2f;
-    Vector2 perp = new Vector2(-(b - a).y, (b - a).x).normalized;
-    mid += perp * Random.Range(-spread, spread);
+> **SinglePath**: 별다른 수정 없이 하나의 line만으로 오브젝트를 생성이 가능한 타입
+> **DoublePath**: 너비가 존재하여, 알고리즘으로 두개의 line으로 분리하여 사용
+> **Outward**: 던전의 경계면과 이어지도록 처리하는 타입
 
-    var result = SubdividePath(a, mid, depth - 1, spread * 0.5f);
-    result.AddRange(SubdividePath(mid, b, depth - 1, spread * 0.5f));
-    return result;
-}
-```
+**path에 관련된 알고리즘 및 고민해볼 내용**
 
-## 극단적 꺾임 완화
+- **점과 점 사이에 임의의 간격과 폭을 설정하여 점 생성하기**: 점 사이를 일정한 간격으로 나눈 후, 수직인 방향으로 일정 너비만큼 가감을 하여 처리하였습니다. 부드럽게 연결이 되었지만 변동성이 크지 않아서, 다른 방법도 고민을 해야겠습니다.
 
-Path를 꼬불꼬불하게 만들다 보면 거의 180도로 꺾이는 구간이 생긴다. 이런 부분은 타일을 배치하기도 어렵고 플레이어가 이동하기도 이상하다.
+- **Path 상의 점을 특정 너비를 기준으로 두 개의 점으로 분리하기**: 새로운 점을 생성하는 과정에서 다른 path와 교차하게 되면 문제가 생길 수 있습니다. 이러한 점을 해결하기 위해서는 각 점에 대해서 **Voronoi 공간분할**을 한 후, 각 공간 내에서만 새로운 점을 생성해야 합니다.
 
-인접한 세 점 사이의 각도를 구해서 임계값 이하면 중간 점을 이동시킨다.
+- **Path의 극단적인 부분 완화하기 (Smooth)**: 여러개의 점을 추가하는 부분에서 이미 어느정도 부드러워져있어서 생략하였습니다. 두 선분 사이 각도를 계산하여, 기존 점을 지우고 새로운 점을 추가하는 방향으로 구현할 수 있을 것입니다.
 
-```csharp
-void SmoothPath(List<Vector2> points, float minAngle)
-{
-    for (int i = 1; i < points.Count - 1; i++)
-    {
-        Vector2 prev = points[i - 1];
-        Vector2 curr = points[i];
-        Vector2 next = points[i + 1];
+- **Path의 방향성 처리하기**: 각 path에는 방향성이 있습니다. 예를들어 회색의 벽타일은 위쪽 방향이 플레이 영역입니다. 각 path에 대해 방향성을 계산해야 실제 오브젝트 생성시 올바르게 회전시킬 수 있습니다.
 
-        float angle = Vector2.Angle(curr - prev, next - curr);
-        if (angle < minAngle)
-        {
-            // 중간 점을 양쪽 점의 평균 방향으로 이동
-            points[i] = (prev + next) / 2f;
-        }
-    }
-}
-```
+- **Path간 교차지점 처리하기**: 두개의 path가 서로 교차하는 경우가 있습니다. 예를들면 도로-강이 교차하면 다리가 생성되어야 합니다. 다리를 생성하는 단계: 1) 먼저 강을 너비를 적용하여 분할, 2) 길을 너비에 따라 분할하되, 강 위를 지나지 않도록 처리, 3) 강과 길이 교차하는 점에 다리 타일 생성. 이 과정에서 점을 이동하거나 생성할 때 voronoi 분할을 이용하여 점 생성 위치를 조심히 다루어야 합니다. 이 부분은 다소 복잡하여 실제 구현은 생략하였습니다.
 
-## Voronoi로 교차점 처리
+## Room
 
-도로와 강이 교차하면 다리를 생성해야 한다. 교차 판정은 선분-선분 교점 공식으로 구한다.
+실내지역에서 사용된 Room을 확장하여 사용합니다. 맵 내에 배치되는 `보스영역, 퀘스트존` 뿐 아니라, `인터렉터블(웨이포인트, 출입구, 던전입구 등)` 오브젝트 위치, `건물, 장애물` 등을 포함합니다. 위치를 고정해 놓는 Fixed 타입과, 빈 공간에 랜덤하게 생성되는 Obstacle 타입으로 구분하였습니다.
 
-교차점 주변을 어느 Path에 귀속시킬지는 **Voronoi 공간분할** 로 처리한다. 각 격자 셀을 가장 가까운 Path에 귀속시키면 된다.
+**room에 관련된 알고리즘 및 고민해볼 내용**
 
-```csharp
-PathType GetDominantPath(Vector2Int cell, List<Path> paths)
-{
-    float minDist = float.MaxValue;
-    PathType result = PathType.None;
+- **사전 정의된 방의 위치 Validation**: 방의 위치를 랜덤하게 이동, 회전하여 플레이에 새로운 경험을 줄 수 있습니다. path와 겹치지 않는 위치로 시도를 하고, 여러번 시도했음에도 불구하고 가능한 위치가 없다면, 해당 seed는 실패로 처리합니다. 실제로 poe 공식 발표에서도 실패하는 seed가 존재한다고 합니다. 알고리즘 소요시간이 20ms밖에 걸리지 않고 성공률도 90%가 넘으니 꽤 나쁘지 않은 선택입니다.
 
-    foreach (var path in paths)
-    {
-        float dist = path.DistanceTo(cell);
-        if (dist < minDist)
-        {
-            minDist = dist;
-            result = path.Type;
-        }
-    }
-    return result;
-}
-```
+## 타일
 
-## Room 배치 Validation
+타일은 1x1 크기의 한 격자입니다. 타일 위에는 벽이 있거나 강, 언덕 등이 있습니다. 각 타일을 이어서 커다란 지형을 만들어야 하기 때문에, 각 구조물이 부드럽게 연결되어야 합니다.
 
-고정 Room(보스, 웨이포인트)을 배치할 때 기존 Path와 겹치면 안 된다. 랜덤 위치를 시도하고, 겹치면 다른 seed로 재시도한다.
+부드러운 연결성을 위해 각 변마다 3개의 구간으로 나누어 총 12개의 구간 `(L1~L3, R1~R3, U1~U3, B1~B3)`을 만들었습니다. 한 곡선은 두개의 구간을 지나가게 되며, 그 종류의 수는 10가지입니다.
 
-목표 지표: **성공률 90% 이상, 처리시간 20ms 이내**
+> L1-R1, L1-R2, L1-R3, L2-R2, L1-U1, L1-U2, L1-U3, L2-U2, L2-U3, L3-U3
 
-```csharp
-bool TryPlaceRoom(Room room, DungeonGrid grid, int maxAttempts = 50)
-{
-    for (int attempt = 0; attempt < maxAttempts; attempt++)
-    {
-        Vector2Int pos = GetRandomPosition(grid, room.Size);
-        if (!OverlapsPath(room, pos, grid))
-        {
-            PlaceRoom(room, pos, grid);
-            return true;
-        }
-    }
-    return false; // 실패 → 상위에서 다른 seed로 재시도
-}
-```
+path의 타입이 DoublePath, Outward인 경우, 방향성도 고려하게 됩니다. 방향성을 고려하게되면 위 10가지마다 반대 방향성을 처리하여 약 20여 가지의 타일을 만들어야 합니다.
 
-## 타일 20여 종
+![타일 타입 설명](/ai-lab-notes/images/blog/poe-dungeon-2-3.png)
 
-야외지역 타일은 실내보다 훨씬 많다. DoublePath와 Outward 타입은 방향성이 있어서, 회전·Flip만으로는 모든 경우를 커버하지 못하는 케이스가 생긴다. 각 변을 3구간(L1·L2·L3, R1·R2·R3, U1~U3, B1~B3)으로 나눠 곡선 조합을 처리했다.
+**타일에 관련된 알고리즘 및 고민해볼 내용**
 
-결국 약 **20여 종**의 타일이 필요했다.
+- **유니티의 Rule타일과 차이점**: 유니티에는 주변 타일의 정보를 읽어서 상황에 맞는 타일을 표현해주는 Rule타일이 있습니다. Rule타일 사용시 한쪽 면에서 L1,L2,L3같이 세분화 할 수는 없고 타일 크기를 1/3로 줄이면 동일한 표현이 가능합니다. 타일의 크기는 오브젝트 수, 메시 수에 영향을 줄 수 있고, 크기가 클 때 할수있는 여러 표현들이 작아지면서 못하는 것들이 생기므로 게임 상황에 따라 선택하면 될 것입니다.
+- **선분이 지나가는 격자 좌표 계산하기**
+- **선분이 지나가는 테두리 위치(L1~B3) 계산하기**
+- **오브젝트 회전, Flip, 방향 처리**
 
----
-
-다음 편은 Unity 프로파일러를 코드로 접근하는 방법이다.
+![야외지역 최종 결과물](/ai-lab-notes/images/blog/poe-dungeon-2-4.png)
