@@ -55,11 +55,11 @@ const BASE = import.meta.env.BASE_URL;
     </header>
 
     <!-- Body -->
-    <div class="prose prose-warm prose-lg max-w-none
+    <div class="prose prose-warm max-w-none
                 prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
                 prose-a:text-[#c07a2f] prose-a:no-underline hover:prose-a:underline
                 prose-code:text-[#c07a2f] prose-code:before:content-none prose-code:after:content-none
-                prose-pre:rounded-xl prose-pre:overflow-x-auto prose-pre:shadow-sm
+                prose-pre:rounded-lg prose-pre:overflow-x-auto
                 prose-blockquote:border-[#d4b896] prose-blockquote:text-[#7a6a52]
                 prose-hr:border-[#e8ddd0]">
       <slot />
@@ -69,11 +69,54 @@ const BASE = import.meta.env.BASE_URL;
 </BaseLayout>
 
 <style>
-  /* Shiki 인라인 배경을 크림색으로 교체 */
-  .prose pre {
-    background-color: #faf5ec !important;
-    border: 1px solid #e8ddd0;
+  /* 전체 줄 간격 축소 */
+  .prose {
+    line-height: 1.7;
+    font-size: 0.975rem;
   }
+
+  /* 단락 간격 축소 */
+  .prose p {
+    margin-top: 0.75em !important;
+    margin-bottom: 0.75em !important;
+  }
+
+  /* 목록 간격 축소 */
+  .prose ul,
+  .prose ol {
+    margin-top: 0.4em !important;
+    margin-bottom: 0.4em !important;
+  }
+
+  .prose li {
+    margin-top: 0.15em !important;
+    margin-bottom: 0.15em !important;
+  }
+
+  .prose li > p {
+    margin-top: 0.15em !important;
+    margin-bottom: 0.15em !important;
+  }
+
+  /* 제목 간격 축소 */
+  .prose h2,
+  .prose h3,
+  .prose h4 {
+    margin-top: 1.4em !important;
+    margin-bottom: 0.4em !important;
+  }
+
+  /* 코드 블록 디자인 — 이미지 기준 */
+  .prose pre {
+    background-color: #f5f5fa !important;
+    border: 1px solid #dddde8;
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    line-height: 1.55;
+    font-size: 0.875rem;
+    font-family: 'Consolas', 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  }
+
   /* pre 안의 code 태그에 인라인 코드 스타일이 새어나오는 것을 방지 */
   .prose pre code {
     background: transparent;
@@ -81,5 +124,6 @@ const BASE = import.meta.env.BASE_URL;
     padding: 0;
     border-radius: 0;
     font-size: inherit;
+    font-family: inherit;
   }
 </style>
