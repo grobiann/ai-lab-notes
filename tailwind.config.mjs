@@ -37,7 +37,7 @@ export default {
             '--tw-prose-quotes':      theme('colors.ink.light'),
             '--tw-prose-quote-borders': theme('colors.cream.300'),
             '--tw-prose-code':        theme('colors.amber.warm'),
-            '--tw-prose-pre-bg':      theme('colors.cream.100'),
+            '--tw-prose-pre-bg':      'transparent',
             '--tw-prose-th-borders':  theme('colors.cream.300'),
             '--tw-prose-td-borders':  theme('colors.cream.200'),
           },

@@ -58,8 +58,9 @@ const BASE = import.meta.env.BASE_URL;
     <div class="prose prose-warm prose-lg max-w-none
                 prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
                 prose-a:text-[#c07a2f] prose-a:no-underline hover:prose-a:underline
-                prose-code:text-[#c07a2f] prose-code:bg-[#fdf3e3] prose-code:px-1 prose-code:rounded
-                prose-pre:bg-[#faf5ec] prose-pre:border prose-pre:border-[#e8ddd0]
+                prose-code:text-[#c07a2f] prose-code:bg-[#fdf3e3] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
+                prose-code:before:content-none prose-code:after:content-none
+                prose-pre:rounded-xl prose-pre:overflow-x-auto prose-pre:shadow-md
                 prose-blockquote:border-[#d4b896] prose-blockquote:text-[#7a6a52]
                 prose-hr:border-[#e8ddd0]">
       <slot />
@@ -67,3 +68,14 @@ const BASE = import.meta.env.BASE_URL;
 
   </article>
 </BaseLayout>
+
+<style>
+  /* pre 안의 code 태그에 인라인 코드 스타일이 적용되는 것을 방지 */
+  .prose pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+</style>
