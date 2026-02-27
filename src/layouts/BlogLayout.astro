@@ -108,9 +108,10 @@ const BASE = import.meta.env.BASE_URL;
     margin-bottom: 0.4em !important;
   }
 
-  /* 코드 블록 디자인 — 다크 테마 (Shiki 배경색 유지) */
+  /* 코드 블록 디자인 — 다크 테마 (Shiki 배경 오버라이드) */
   .prose pre {
-    border: 1px solid #3e4452;
+    background-color: #3a3f4b !important;
+    border: 1px solid #4a5060;
     border-radius: 0.5rem;
     padding: 1rem 1.25rem;
     line-height: 1.55;
