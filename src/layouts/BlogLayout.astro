@@ -59,8 +59,7 @@ const BASE = import.meta.env.BASE_URL;
                 prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
                 prose-a:text-[#c07a2f] prose-a:no-underline hover:prose-a:underline
                 prose-code:text-[#c07a2f] prose-code:before:content-none prose-code:after:content-none
-                prose-pre:rounded-lg prose-pre:overflow-x-auto
-                prose-blockquote:border-[#d4b896] prose-blockquote:text-[#7a6a52]
+prose-blockquote:border-[#d4b896] prose-blockquote:text-[#7a6a52]
                 prose-hr:border-[#e8ddd0]">
       <slot />
     </div>
@@ -108,24 +107,5 @@ const BASE = import.meta.env.BASE_URL;
     margin-bottom: 0.4em !important;
   }
 
-  /* 코드 블록 디자인 — 라이트 테마, 거의 투명한 배경 */
-  .prose pre {
-    background-color: rgba(0, 0, 0, 0.04) !important;
-    border: 1px solid #e0d8cc;
-    border-radius: 0.5rem;
-    padding: 1rem 1.25rem;
-    line-height: 1.55;
-    font-size: 0.875rem;
-    font-family: 'Consolas', 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-  }
 
-  /* pre 안의 code 태그에 인라인 코드 스타일이 새어나오는 것을 방지 */
-  .prose pre code {
-    background: transparent;
-    color: inherit;
-    padding: 0;
-    border-radius: 0;
-    font-size: inherit;
-    font-family: inherit;
-  }
 </style>
