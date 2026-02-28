@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import rehypeHighlight from 'rehype-highlight'
 import { createClient } from '@/lib/supabase/server'
 import type { Post } from '@/lib/types'
 
@@ -76,7 +77,7 @@ export default async function BlogPostPage({ params }: Props) {
 
       {/* 본문 */}
       <div className="prose prose-warm max-w-none">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
           {post.content}
         </ReactMarkdown>
       </div>

@@ -1,3 +1,5 @@
+@import 'highlight.js/styles/vs2015.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,4 +11,28 @@ html {
 body {
   background-color: #faf8f5;
   color: #2c2416;
+}
+
+/* 코드 블록 — hljs 배경은 pre에서 통합 관리 */
+.prose pre > code.hljs {
+  background: transparent;
+  padding: 0;
+}
+
+/* 인라인 코드 — Slack 스타일 */
+.prose :not(pre) > code {
+  background-color: #f0e8da;
+  color: #c7254e;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  border: 1px solid #dcc9b0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.875em;
+  font-weight: normal;
+}
+
+/* prose 기본 백틱 장식 제거 */
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+  content: none !important;
 }
