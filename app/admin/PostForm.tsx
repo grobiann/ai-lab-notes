@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { revalidateBlog } from '@/lib/actions'
 import type { Post } from '@/lib/types'
 
 function toSlug(text: string) {
@@ -74,6 +75,7 @@ export default function PostForm({ post }: { post?: Post }) {
       return
     }
 
+    await revalidateBlog()
     router.push('/admin')
     router.refresh()
   }
@@ -83,6 +85,7 @@ export default function PostForm({ post }: { post?: Post }) {
     setLoading(true)
     const supabase = createClient()
     await supabase.from('posts').delete().eq('id', post.id)
+    await revalidateBlog()
     router.push('/admin')
     router.refresh()
   }

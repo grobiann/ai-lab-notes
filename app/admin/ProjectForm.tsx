@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { revalidateProjects } from '@/lib/actions'
 import type { Project } from '@/lib/types'
 
 type Props = {
@@ -59,6 +60,7 @@ export default function ProjectForm({ project }: Props) {
 
     setSaving(false)
     if (err) { setError(err.message); return }
+    await revalidateProjects()
     router.push('/admin/projects')
     router.refresh()
   }
@@ -70,6 +72,7 @@ export default function ProjectForm({ project }: Props) {
     const { error: err } = await supabase.from('projects').delete().eq('id', project!.id)
     setDeleting(false)
     if (err) { setError(err.message); return }
+    await revalidateProjects()
     router.push('/admin/projects')
     router.refresh()
   }

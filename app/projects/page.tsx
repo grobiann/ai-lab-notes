@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import type { Project } from '@/lib/types'
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: 'Projects',
   description: '장진석의 회사 프로젝트 및 개인 프로젝트',

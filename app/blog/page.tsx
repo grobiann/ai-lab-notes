@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import PostCard from '@/components/PostCard'
 import type { Post } from '@/lib/types'
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: 'Blog',
   description: 'AI·개발 학습 블로그 글 목록',
