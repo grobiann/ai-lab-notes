@@ -20,9 +20,6 @@ export default async function BlogPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
       <div className="mb-12">
-        <p className="text-xs font-semibold tracking-widest uppercase text-[#c07a2f] mb-3">
-          All Posts
-        </p>
         <h1 className="font-serif text-4xl font-bold tracking-tight text-[#1a1208]">
           Blog
         </h1>

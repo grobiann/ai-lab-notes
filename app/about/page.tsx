@@ -39,9 +39,6 @@ export default function AboutPage() {
     <div className="max-w-2xl mx-auto px-6 py-16">
       {/* 헤더 */}
       <div className="mb-14">
-        <p className="text-xs font-semibold tracking-widest uppercase text-[#c07a2f] mb-3">
-          About
-        </p>
         <h1 className="font-serif text-4xl font-bold tracking-tight text-[#1a1208] mb-2">
           장진석
         </h1>
