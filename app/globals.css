@@ -13,7 +13,12 @@ body {
   color: #2c2416;
 }
 
-/* 코드 블록 — hljs 배경은 pre에서 통합 관리 */
+/* 코드 블록 — 테두리 + 연한 배경 */
+.prose pre {
+  border: 1px solid #d8cfc3;
+  border-radius: 6px;
+}
+
 .prose pre > code.hljs {
   background: transparent;
   padding: 0;
