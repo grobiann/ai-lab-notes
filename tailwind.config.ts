@@ -45,8 +45,8 @@ const config: Config = {
             '--tw-prose-quote-borders': '#c07a2f',
             '--tw-prose-captions': '#7a6a52',
             '--tw-prose-code': '#c7254e',
-            '--tw-prose-pre-code': '#d4d4d4',
-            '--tw-prose-pre-bg': 'rgba(30, 30, 30, 0.35)',
+            '--tw-prose-pre-code': '#383a42',
+            '--tw-prose-pre-bg': '#ede6da',
             '--tw-prose-th-borders': '#d4b896',
             '--tw-prose-td-borders': '#e8ddd0',
             // 목록 줄간격 제거
