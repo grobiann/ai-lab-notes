@@ -1,32 +1,36 @@
-# build output
-dist/
-.output/
-# docs/ is intentionally tracked (GitHub Pages source)
-
-# generated types
-.astro/
+# Next.js
+/.next/
+/out/
 
 # dependencies
 node_modules/
 
-# logs
+# environment variables
+.env
+.env*.local
+
+# production
+/build
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# environment variables
-.env
-.env.production
-
-# macOS
+# misc
 .DS_Store
+*.pem
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
 # JetBrains
 .idea/
-
-# VS Code
-.vscode/
 
 # Claude 로컬 개인 설정 (공유 안 함)
 CLAUDE.local.md
