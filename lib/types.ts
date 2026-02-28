@@ -11,6 +11,21 @@ export type Post = {
   updated_at: string
 }
 
+export type Project = {
+  id: string
+  title: string
+  company: string | null
+  period: string | null
+  description: string
+  tags: string[]
+  type: 'work' | 'personal'
+  github: string | null
+  demo: string | null
+  display_order: number
+  created_at: string
+  updated_at: string
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -18,6 +33,12 @@ export type Database = {
         Row: Post
         Insert: Omit<Post, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Post, 'id' | 'created_at'>>
+        Relationships: []
+      }
+      projects: {
+        Row: Project
+        Insert: Omit<Project, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Project, 'id' | 'created_at'>>
         Relationships: []
       }
     }
