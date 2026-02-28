@@ -23,13 +23,21 @@ export default async function AdminPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-[#1a1208] mb-1">
-          대시보드
-        </h1>
-        <p className="text-sm text-[#7a6a52]">
-          발행 {published}개 · 임시저장 {drafts}개
-        </p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="font-serif text-3xl font-bold text-[#1a1208] mb-1">
+            대시보드
+          </h1>
+          <p className="text-sm text-[#7a6a52]">
+            발행 {published}개 · 임시저장 {drafts}개
+          </p>
+        </div>
+        <Link
+          href="/admin/posts/new"
+          className="text-sm font-medium text-white bg-[#c07a2f] hover:bg-[#a86828] px-4 py-2 rounded-lg transition-colors"
+        >
+          + 새 글
+        </Link>
       </div>
 
       {posts && posts.length > 0 ? (

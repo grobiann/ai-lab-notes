@@ -23,24 +23,12 @@ export default function AdminNav() {
         >
           글 관리
         </Link>
-        <Link
-          href="/admin/posts/new"
-          className="text-sm font-medium text-white bg-[#c07a2f] hover:bg-[#a86828] px-3 py-1.5 rounded-lg transition-colors"
-        >
-          + 새 글
-        </Link>
         <span className="text-[#e8ddd0]">|</span>
         <Link
           href="/admin/projects"
           className="text-sm font-semibold text-[#c07a2f] hover:text-[#a86828]"
         >
           프로젝트
-        </Link>
-        <Link
-          href="/admin/projects/new"
-          className="text-sm font-medium text-[#2c2416] bg-[#f5ead8] hover:bg-[#ecdcc0] border border-[#d4b896] px-3 py-1.5 rounded-lg transition-colors"
-        >
-          + 새 프로젝트
         </Link>
       </div>
       <div className="flex items-center gap-4">
