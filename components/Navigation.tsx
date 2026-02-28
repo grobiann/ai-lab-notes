@@ -18,6 +18,12 @@ export default function Navigation() {
             Blog
           </Link>
           <Link
+            href="/projects"
+            className="text-sm text-[#7a6a52] hover:text-[#c07a2f] transition-colors"
+          >
+            Projects
+          </Link>
+          <Link
             href="/about"
             className="text-sm text-[#7a6a52] hover:text-[#c07a2f] transition-colors"
           >
