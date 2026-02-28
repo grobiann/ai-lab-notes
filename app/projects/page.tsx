@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { supabasePublic } from '@/lib/supabase/public'
 import type { Project } from '@/lib/types'
 
 export const revalidate = 3600
@@ -64,8 +64,7 @@ function ProjectCard({ project }: { project: Project }) {
 }
 
 export default async function ProjectsPage() {
-  const supabase = await createClient()
-  const { data } = await supabase
+  const { data } = await supabasePublic
     .from('projects')
     .select('*')
     .order('display_order', { ascending: true })

@@ -1,11 +1,12 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { supabasePublic } from '@/lib/supabase/public'
 import PostCard from '@/components/PostCard'
 import type { Post } from '@/lib/types'
 
+export const revalidate = 3600
+
 export default async function HomePage() {
-  const supabase = await createClient()
-  const { data } = await supabase
+  const { data } = await supabasePublic
     .from('posts')
     .select('*')
     .eq('is_published', true)
