@@ -80,7 +80,7 @@ function FullPreviewModal({
               ))}
             </div>
           )}
-          <h1 className="font-serif text-4xl font-bold text-[#1a1208] leading-tight mb-4">
+          <h1 className="font-serif text-4xl font-black text-[#1a1208] leading-tight mb-4">
             {title || <span className="text-[#b0977a]">제목 없음</span>}
           </h1>
           {description && <p className="text-lg text-[#7a6a52] mb-4">{description}</p>}

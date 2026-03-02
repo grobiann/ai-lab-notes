@@ -34,7 +34,7 @@ export default function PostCard({ post }: { post: Post }) {
         </p>
       )}
       <p className="text-xs text-[#b0977a]">
-        {formatDate(post.published_at ?? post.created_at)}
+        {post.published_at ? formatDate(post.published_at) : formatDate(post.created_at)}
       </p>
     </Link>
   )

@@ -69,7 +69,7 @@ export default async function BlogPostPage({ params }: Props) {
           <p className="text-lg text-[#7a6a52] mb-4">{post.description}</p>
         )}
         <p className="text-sm text-[#b0977a]">
-          {formatDate(post.published_at ?? post.created_at)}
+          {post.published_at ? formatDate(post.published_at) : formatDate(post.created_at)}
         </p>
       </header>
 
