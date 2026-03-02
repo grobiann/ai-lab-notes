@@ -102,6 +102,7 @@ export default function PostForm({ post }: { post?: Post }) {
   const [title, setTitle] = useState(post?.title ?? '')
   const [slug, setSlug] = useState(post?.slug ?? '')
   const [description, setDescription] = useState(post?.description ?? '')
+  const [category, setCategory] = useState(post?.category ?? '')
   const [tags, setTags] = useState(post?.tags?.join(', ') ?? '')
   const [content, setContent] = useState(post?.content ?? '')
   const [isPublished, setIsPublished] = useState(post?.is_published ?? false)
@@ -202,6 +203,7 @@ export default function PostForm({ post }: { post?: Post }) {
       title: title.trim(),
       slug: slug.trim(),
       description: description.trim() || null,
+      category: category.trim() || null,
       content: content.trim(),
       tags: tagArray,
       is_published: publish,
@@ -325,6 +327,21 @@ export default function PostForm({ post }: { post?: Post }) {
             rows={2}
             className="w-full px-4 py-2.5 border border-[#e8ddd0] rounded-lg text-sm focus:outline-none focus:border-[#c07a2f] bg-white resize-none"
             placeholder="1~2문장 요약"
+          />
+        </div>
+
+        {/* 카테고리 */}
+        <div>
+          <label className="block text-sm font-medium text-[#2c2416] mb-1">
+            카테고리
+            <span className="text-[#b0977a] font-normal ml-1">(그룹핑, 선택 사항)</span>
+          </label>
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full px-4 py-2.5 border border-[#e8ddd0] rounded-lg text-sm focus:outline-none focus:border-[#c07a2f] bg-white"
+            placeholder="예: Unity, AI, 알고리즘"
           />
         </div>
 

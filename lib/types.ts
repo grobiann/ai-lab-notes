@@ -5,6 +5,7 @@ export type Post = {
   description: string | null
   content: string
   tags: string[]
+  category: string | null
   is_published: boolean
   published_at: string | null
   created_at: string
