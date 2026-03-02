@@ -9,6 +9,8 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 
+type ViewMode = 'edit' | 'split' | 'preview'
+
 function toSlug(text: string) {
   return text
     .toLowerCase()
@@ -24,6 +26,16 @@ function formatDate(date: Date) {
     month: 'long',
     day: 'numeric',
   })
+}
+
+function MarkdownPreview({ content }: { content: string }) {
+  return content ? (
+    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+      {content}
+    </ReactMarkdown>
+  ) : (
+    <p className="text-[#b0977a] text-sm">내용을 입력하면 여기에 미리보기가 표시됩니다.</p>
+  )
 }
 
 function FullPreviewModal({
@@ -57,16 +69,12 @@ function FullPreviewModal({
           ✕ 닫기
         </button>
       </div>
-
       <article className="max-w-2xl mx-auto px-6 py-16">
         <header className="mb-10">
           {tagList.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {tagList.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"
-                >
+                <span key={tag} className="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full">
                   {tag}
                 </span>
               ))}
@@ -75,22 +83,12 @@ function FullPreviewModal({
           <h1 className="font-serif text-4xl font-bold text-[#1a1208] leading-tight mb-4">
             {title || <span className="text-[#b0977a]">제목 없음</span>}
           </h1>
-          {description && (
-            <p className="text-lg text-[#7a6a52] mb-4">{description}</p>
-          )}
+          {description && <p className="text-lg text-[#7a6a52] mb-4">{description}</p>}
           <p className="text-sm text-[#b0977a]">{dateStr}</p>
         </header>
-
         <hr className="border-[#e8ddd0] mb-10" />
-
         <div className="prose prose-warm max-w-none">
-          {content ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
-              {content}
-            </ReactMarkdown>
-          ) : (
-            <p className="text-[#b0977a]">본문 내용이 없습니다.</p>
-          )}
+          <MarkdownPreview content={content} />
         </div>
       </article>
     </div>
@@ -107,7 +105,7 @@ export default function PostForm({ post }: { post?: Post }) {
   const [tags, setTags] = useState(post?.tags?.join(', ') ?? '')
   const [content, setContent] = useState(post?.content ?? '')
   const [isPublished, setIsPublished] = useState(post?.is_published ?? false)
-  const [preview, setPreview] = useState(false)
+  const [viewMode, setViewMode] = useState<ViewMode>('edit')
   const [fullPreview, setFullPreview] = useState(false)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -149,24 +147,19 @@ export default function PostForm({ post }: { post?: Post }) {
       setError('파일 크기는 5MB 이하여야 합니다.')
       return
     }
-
     setError('')
     setUploading(true)
-
     const supabase = createClient()
     const ext = file.name.split('.').pop()
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-
     const { error: uploadError } = await supabase.storage
       .from('blog-images')
       .upload(fileName, file, { cacheControl: '3600', upsert: false })
-
     if (uploadError) {
       setError(`이미지 업로드 실패: ${uploadError.message}`)
       setUploading(false)
       return
     }
-
     const { data } = supabase.storage.from('blog-images').getPublicUrl(fileName)
     const altText = file.name.replace(/\.[^.]+$/, '')
     insertAtCursor(`![${altText}](${data.publicUrl})`)
@@ -203,13 +196,8 @@ export default function PostForm({ post }: { post?: Post }) {
     }
     setError('')
     setLoading(true)
-
     const supabase = createClient()
-    const tagArray = tags
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean)
-
+    const tagArray = tags.split(',').map((t) => t.trim()).filter(Boolean)
     const payload = {
       title: title.trim(),
       slug: slug.trim(),
@@ -220,7 +208,6 @@ export default function PostForm({ post }: { post?: Post }) {
       published_at: publish ? (post?.published_at ?? new Date().toISOString()) : null,
       updated_at: new Date().toISOString(),
     }
-
     let err
     if (isEdit) {
       const result = await supabase.from('posts').update(payload).eq('id', post.id)
@@ -229,13 +216,11 @@ export default function PostForm({ post }: { post?: Post }) {
       const result = await supabase.from('posts').insert(payload)
       err = result.error
     }
-
     if (err) {
       setError(err.message)
       setLoading(false)
       return
     }
-
     await revalidateBlog()
     router.push('/admin')
     router.refresh()
@@ -251,6 +236,32 @@ export default function PostForm({ post }: { post?: Post }) {
     router.refresh()
   }
 
+  const editorArea = (
+    <div
+      className={`relative rounded-lg transition-colors ${isDragging ? 'ring-2 ring-[#c07a2f] ring-offset-1' : ''}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      <textarea
+        ref={textareaRef}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        className={`w-full px-4 py-3 border border-[#e8ddd0] rounded-lg text-sm focus:outline-none focus:border-[#c07a2f] bg-white font-mono leading-relaxed resize-none ${
+          viewMode === 'split' ? 'h-full' : ''
+        }`}
+        rows={viewMode === 'split' ? undefined : 20}
+        style={viewMode === 'split' ? { height: '100%' } : undefined}
+        placeholder={`# 제목\n\n본문을 Markdown으로 작성하세요.\n\n이미지는 버튼으로 첨부하거나 파일을 드래그&드롭 하세요.`}
+      />
+      {isDragging && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#fdf3e3]/80 border-2 border-dashed border-[#c07a2f] rounded-lg pointer-events-none">
+          <p className="text-sm font-medium text-[#c07a2f]">이미지를 여기에 놓으세요</p>
+        </div>
+      )}
+    </div>
+  )
+
   return (
     <>
       {fullPreview && (
@@ -264,7 +275,6 @@ export default function PostForm({ post }: { post?: Post }) {
         />
       )}
 
-      {/* 숨겨진 파일 입력 */}
       <input
         ref={fileInputRef}
         type="file"
@@ -336,13 +346,13 @@ export default function PostForm({ post }: { post?: Post }) {
         {/* 본문 */}
         <div>
           {/* 툴바 */}
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between mb-2">
             <label className="text-sm font-medium text-[#2c2416]">
               본문 (Markdown) <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center gap-3">
-              {/* 이미지 첨부 버튼 */}
-              {!preview && (
+            <div className="flex items-center gap-2">
+              {/* 이미지 첨부 */}
+              {viewMode !== 'preview' && (
                 <button
                   type="button"
                   disabled={uploading}
@@ -364,55 +374,101 @@ export default function PostForm({ post }: { post?: Post }) {
                   )}
                 </button>
               )}
-              <button
-                type="button"
-                onClick={() => setPreview(!preview)}
-                className="text-xs text-[#c07a2f] hover:text-[#a86828]"
-              >
-                {preview ? '편집 모드' : 'Markdown 미리보기'}
-              </button>
+
+              {/* 보기 모드 토글 */}
+              <div className="flex rounded-lg border border-[#e8ddd0] overflow-hidden text-xs">
+                {(
+                  [
+                    { mode: 'edit', label: '편집' },
+                    { mode: 'split', label: '분할' },
+                    { mode: 'preview', label: '미리보기' },
+                  ] as { mode: ViewMode; label: string }[]
+                ).map(({ mode, label }) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setViewMode(mode)}
+                    className={`px-3 py-1 transition-colors ${
+                      viewMode === mode
+                        ? 'bg-[#c07a2f] text-white'
+                        : 'bg-white text-[#7a6a52] hover:bg-[#fdf3e3]'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {preview ? (
-            <div className="min-h-[400px] p-4 border border-[#e8ddd0] rounded-lg bg-white prose prose-warm max-w-none text-sm overflow-auto">
-              {content ? (
-                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
-                  {content}
-                </ReactMarkdown>
-              ) : (
-                <span className="text-[#b0977a]">내용을 입력하세요</span>
-              )}
+          {/* 편집 전용 */}
+          {viewMode === 'edit' && editorArea}
+
+          {/* 미리보기 전용 */}
+          {viewMode === 'preview' && (
+            <div className="min-h-[500px] p-6 border border-[#e8ddd0] rounded-lg bg-white prose prose-warm max-w-none overflow-auto">
+              <MarkdownPreview content={content} />
             </div>
-          ) : (
+          )}
+
+          {/* 분할 보기 — 뷰포트 전체 너비로 확장 */}
+          {viewMode === 'split' && (
             <div
-              className={`relative rounded-lg transition-colors ${isDragging ? 'ring-2 ring-[#c07a2f] ring-offset-1' : ''}`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
+              style={{
+                position: 'relative',
+                left: '50%',
+                right: '50%',
+                marginLeft: '-50vw',
+                marginRight: '-50vw',
+                width: '100vw',
+              }}
             >
-              <textarea
-                ref={textareaRef}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                rows={20}
-                className="w-full px-4 py-3 border border-[#e8ddd0] rounded-lg text-sm focus:outline-none focus:border-[#c07a2f] bg-white resize-y font-mono leading-relaxed"
-                placeholder="# 제목&#10;&#10;본문을 Markdown으로 작성하세요.&#10;&#10;이미지는 버튼으로 첨부하거나 파일을 드래그&드롭 하세요."
-              />
-              {isDragging && (
-                <div className="absolute inset-0 flex items-center justify-center bg-[#fdf3e3]/80 border-2 border-dashed border-[#c07a2f] rounded-lg pointer-events-none">
-                  <p className="text-sm font-medium text-[#c07a2f]">이미지를 여기에 놓으세요</p>
+              <div className="flex border border-[#e8ddd0] rounded-xl overflow-hidden bg-white mx-4" style={{ height: '70vh' }}>
+                {/* 왼쪽: 에디터 */}
+                <div
+                  className="flex flex-col w-1/2 border-r border-[#e8ddd0]"
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <div className="flex items-center gap-2 px-3 py-2 border-b border-[#e8ddd0] bg-[#faf8f5]">
+                    <span className="w-2 h-2 rounded-full bg-[#c07a2f] opacity-60" />
+                    <span className="text-xs text-[#7a6a52] font-medium">Markdown 편집</span>
+                  </div>
+                  <div className="relative flex-1 overflow-hidden">
+                    <textarea
+                      ref={textareaRef}
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      className="absolute inset-0 w-full h-full px-4 py-3 text-sm font-mono leading-relaxed bg-white focus:outline-none resize-none"
+                      placeholder={`# 제목\n\n본문을 Markdown으로 작성하세요.\n\n이미지는 버튼으로 첨부하거나 파일을 드래그&드롭 하세요.`}
+                    />
+                    {isDragging && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-[#fdf3e3]/80 border-2 border-dashed border-[#c07a2f] pointer-events-none">
+                        <p className="text-sm font-medium text-[#c07a2f]">이미지를 여기에 놓으세요</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
+
+                {/* 오른쪽: 미리보기 */}
+                <div className="flex flex-col w-1/2">
+                  <div className="flex items-center gap-2 px-3 py-2 border-b border-[#e8ddd0] bg-[#faf8f5]">
+                    <span className="w-2 h-2 rounded-full bg-green-400 opacity-70" />
+                    <span className="text-xs text-[#7a6a52] font-medium">미리보기</span>
+                  </div>
+                  <div className="flex-1 overflow-y-auto px-6 py-4 prose prose-warm max-w-none text-sm">
+                    <MarkdownPreview content={content} />
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
         {/* 에러 */}
         {error && (
-          <p className="text-sm text-red-600 bg-red-50 px-4 py-2.5 rounded-lg">
-            {error}
-          </p>
+          <p className="text-sm text-red-600 bg-red-50 px-4 py-2.5 rounded-lg">{error}</p>
         )}
 
         {/* 버튼 */}
