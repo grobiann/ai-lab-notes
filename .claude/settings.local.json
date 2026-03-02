@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(new-blog-post)",
+      "Skill(new-blog-post:*)",
+      "Bash(gh run:*)"
+      "Bash(*)",              // ← 모든 Bash 명령어 자동 허용
+      "WebFetch(*)",          // ← 모든 웹 페칭 자동 허용 (선택사항)
+      "Read(*)",              // ← 모든 파일 읽기 자동 허용 (선택사항)
+      "Skill(*)"              // ← 모든 Skill 자동 허용
+      "Edit(*)"
+    ]
+  },
+  "outputStyle": "default",
+  "prefersReducedMotion": false
+}
