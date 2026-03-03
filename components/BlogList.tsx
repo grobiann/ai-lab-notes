@@ -10,7 +10,7 @@ type ViewMode = 'list' | 'compact' | 'card'
 export default function BlogList({ posts }: { posts: Post[] }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [viewMode, setViewMode] = useState<ViewMode>('list')
+  const [viewMode, setViewMode] = useState<ViewMode>('compact')
 
   // 고유한 카테고리 목록 (null 제외)
   const categories = useMemo(() => {
