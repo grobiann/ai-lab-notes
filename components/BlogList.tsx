@@ -59,7 +59,11 @@ export default function BlogList({ posts }: { posts: Post[] }) {
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
       // 카테고리 필터: 선택된 카테고리 또는 그 자식 카테고리 포함
-      if (selectedCategory && post.category) {
+      if (selectedCategory) {
+        // 카테고리가 없으면 제외
+        if (!post.category) {
+          return false
+        }
         const isExactMatch = post.category === selectedCategory
         const isChildMatch = post.category.startsWith(selectedCategory + '/')
         if (!isExactMatch && !isChildMatch) {
