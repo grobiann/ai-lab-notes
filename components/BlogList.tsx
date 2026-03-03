@@ -81,7 +81,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
     })
   }, [posts, searchQuery, selectedCategory])
 
-  // 카테고리별 글 개수
+  // 카테고리별 글 개수 (자식 카테고리 포함)
   const categoryCount = useMemo(() => {
     const count: Record<string, number> = {}
     posts.forEach((post) => {
@@ -89,6 +89,27 @@ export default function BlogList({ posts }: { posts: Post[] }) {
         count[post.category] = (count[post.category] ?? 0) + 1
       }
     })
+
+    // 부모 카테고리의 개수를 자식 카테고리 포함으로 업데이트
+    const parents = new Set<string>()
+    Object.keys(count).forEach((cat) => {
+      const parts = cat.split('/')
+      for (let i = 1; i < parts.length; i++) {
+        const parentPath = parts.slice(0, i).join('/')
+        parents.add(parentPath)
+      }
+    })
+
+    parents.forEach((parent) => {
+      const childCount = Object.entries(count).reduce((sum, [cat, num]) => {
+        if (cat === parent || cat.startsWith(parent + '/')) {
+          return sum + num
+        }
+        return sum
+      }, 0)
+      count[parent] = childCount
+    })
+
     return count
   }, [posts])
 
@@ -135,13 +156,14 @@ export default function BlogList({ posts }: { posts: Post[] }) {
               <div className="space-y-1">
                 <button
                   onClick={() => setSelectedCategory(null)}
-                  className={`w-full text-left text-sm px-3 py-1 rounded-lg transition-colors ${
+                  className={`w-full text-left text-sm px-3 py-1 rounded-lg transition-colors flex justify-between items-center ${
                     selectedCategory === null
                       ? 'bg-[#c07a2f] text-white font-medium'
                       : 'text-[#7a6a52] hover:bg-[#faf8f5]'
                   }`}
                 >
-                  전체
+                  <span>전체</span>
+                  <span className="text-xs opacity-75">({posts.length})</span>
                 </button>
                 {categoryTree.map((node) => renderCategoryNode(node))}
               </div>
