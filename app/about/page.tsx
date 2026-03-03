@@ -36,10 +36,10 @@ const experience = [
 
 export default function AboutPage() {
   return (
-    <div className="max-w-2xl mx-auto px-6 py-16">
+    <div className="max-w-5xl mx-auto px-6 py-16">
       {/* 헤더 */}
       <div className="mb-14">
-        <h1 className="font-serif text-4xl font-bold tracking-tight text-[#1a1208] mb-2">
+        <h1 className="font-serif text-5xl font-black tracking-tight text-[#1a1208] mb-2">
           장진석
         </h1>
         <p className="text-[#7a6a52] text-lg">5년차 게임 클라이언트 개발자</p>
@@ -79,7 +79,7 @@ export default function AboutPage() {
           {experience.map((exp) => (
             <div key={exp.company} className="border-l-2 border-[#e8ddd0] pl-5">
               <div className="flex flex-wrap items-baseline gap-x-3 mb-1">
-                <span className="font-semibold text-[#1a1208]">{exp.company}</span>
+                <span className="font-serif font-bold text-[#1a1208]">{exp.company}</span>
                 <span className="text-xs text-[#b0977a]">{exp.period}</span>
               </div>
               <p className="text-xs text-[#c07a2f] mb-1">{exp.role}</p>
@@ -93,7 +93,7 @@ export default function AboutPage() {
       <section>
         <h2 className="font-serif text-xl font-bold text-[#1a1208] mb-4">Education</h2>
         <div className="border-l-2 border-[#e8ddd0] pl-5">
-          <span className="font-semibold text-[#1a1208]">충남대학교 수학과</span>
+          <span className="font-serif font-bold text-[#1a1208]">충남대학교 수학과</span>
           <span className="text-xs text-[#b0977a] ml-3">2011 – 2017</span>
         </div>
       </section>

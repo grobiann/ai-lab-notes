@@ -28,7 +28,7 @@ function ProjectCard({ project }: { project: Project }) {
   return (
     <div className="bg-white border border-[#e8ddd0] rounded-xl p-6">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
-        <h3 className="font-semibold text-[#1a1208]">{project.title}</h3>
+        <h3 className="font-serif font-bold text-lg text-[#1a1208]">{project.title}</h3>
         <div className="flex items-center gap-3">
           {project.github && (
             <a
@@ -74,9 +74,9 @@ export default async function ProjectsPage() {
   const personalProjects = projects?.filter((p) => p.type === 'personal') ?? []
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-5xl mx-auto px-6 py-16">
       <div className="mb-14">
-        <h1 className="font-serif text-4xl font-bold tracking-tight text-[#1a1208]">
+        <h1 className="font-serif text-5xl font-black tracking-tight text-[#1a1208]">
           Projects
         </h1>
       </div>

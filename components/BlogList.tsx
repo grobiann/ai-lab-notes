@@ -109,7 +109,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
           {/* 헤더 + 보기모드 토글 */}
           <div className="mb-8 flex items-start justify-between gap-4">
             <div>
-              <h1 className="font-serif text-4xl font-bold tracking-tight text-[#1a1208] mb-2">
+              <h1 className="font-serif text-5xl font-black tracking-tight text-[#1a1208] mb-2">
                 Blog
               </h1>
               <p className="text-sm text-[#b0977a]">
