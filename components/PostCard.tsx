@@ -27,7 +27,7 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
         className="flex gap-5 items-start px-5 py-4 bg-white border border-[#e8ddd0] hover:border-[#d4b896] rounded-lg transition-all hover:shadow-sm hover:bg-[#faf8f5]"
       >
         <div className="flex-1 min-w-0">
-          <h2 className="font-serif text-base font-bold text-[#1a1208] mb-1 line-clamp-2">
+          <h2 className="font-semibold text-[#1a1208] mb-1 line-clamp-2">
             {post.title}
           </h2>
           {post.description && (
@@ -63,7 +63,7 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
         href={`/blog/${post.slug}`}
         className="flex justify-between items-center p-3 border-b border-[#e8ddd0] hover:bg-[#faf8f5] transition-colors"
       >
-        <h2 className="font-serif text-sm font-bold text-[#1a1208] truncate flex-1">
+        <h2 className="font-notosans text-[#1a1208] truncate flex-1">
           {post.title}
         </h2>
         <p className="text-xs text-[#b0977a] ml-4 shrink-0">{dateStr}</p>
@@ -87,7 +87,7 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
           </span>
         ))}
       </div>
-      <h2 className="font-serif text-xl font-bold text-[#1a1208] mb-2 leading-snug">
+      <h2 className="font-semibold text-[#1a1208] mb-2 leading-snug">
         {post.title}
       </h2>
       {post.description && (

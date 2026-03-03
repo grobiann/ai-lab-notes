@@ -74,10 +74,10 @@ export default function BlogList({ posts }: { posts: Post[] }) {
           {categories.length > 0 && (
             <div>
               <h3 className="font-serif text-sm font-bold text-[#1a1208] mb-3">카테고리</h3>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <button
                   onClick={() => setSelectedCategory(null)}
-                  className={`w-full text-left text-sm px-3 py-2 rounded-lg transition-colors ${
+                  className={`w-full text-left text-sm px-3 py-1 rounded-lg transition-colors ${
                     selectedCategory === null
                       ? 'bg-[#c07a2f] text-white font-medium'
                       : 'text-[#7a6a52] hover:bg-[#faf8f5]'
@@ -89,7 +89,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`w-full text-left text-sm px-3 py-2 rounded-lg transition-colors flex justify-between items-center ${
+                    className={`w-full text-left text-sm px-3 py-1 rounded-lg transition-colors flex justify-between items-center ${
                       selectedCategory === cat
                         ? 'bg-[#c07a2f] text-white font-medium'
                         : 'text-[#7a6a52] hover:bg-[#faf8f5]'

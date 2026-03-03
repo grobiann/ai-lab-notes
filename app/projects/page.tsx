@@ -28,7 +28,7 @@ function ProjectCard({ project }: { project: Project }) {
   return (
     <div className="bg-white border border-[#e8ddd0] rounded-xl p-6">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
-        <h3 className="font-serif font-bold text-lg text-[#1a1208]">{project.title}</h3>
+        <h3 className="font-semibold text-[#1a1208]">{project.title}</h3>
         <div className="flex items-center gap-3">
           {project.github && (
             <a
