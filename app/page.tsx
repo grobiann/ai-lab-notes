@@ -11,7 +11,7 @@ export default async function HomePage() {
     .select('*')
     .eq('is_published', true)
     .order('published_at', { ascending: false })
-    .limit(8)
+    .limit(6)
   const posts = data as Post[] | null
 
   return (
@@ -21,7 +21,7 @@ export default async function HomePage() {
         <div className="text-center">
           {/* Decorative line */}
           <div className="flex justify-center mb-6">
-            <div className="w-12 h-0.5 bg-[#c07a2f]" />
+            <div className="w-16 h-1 bg-[#c07a2f] rounded-full" />
           </div>
 
           {/* Eyebrow */}
@@ -73,9 +73,9 @@ export default async function HomePage() {
               전체 보기 →
             </Link>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-3">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} mode="compact" />
+              <PostCard key={post.id} post={post} mode="list" />
             ))}
           </div>
         </section>

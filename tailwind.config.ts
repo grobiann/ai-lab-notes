@@ -16,6 +16,7 @@ const config: Config = {
           pale: '#fdf3e3',
         },
         ink: {
+          dark: '#1a1208',
           DEFAULT: '#2c2416',
           light: '#7a6a52',
           muted: '#b0977a',
@@ -28,8 +29,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ['Georgia', 'serif'],
-        sans: ['Helvetica Neue', 'Arial', 'sans-serif'],
+        serif: ['var(--font-display)', 'Georgia', 'serif'],
+        sans: ['var(--font-body)', 'Noto Sans KR', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
       typography: {
         warm: {

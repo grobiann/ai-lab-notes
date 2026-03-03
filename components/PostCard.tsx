@@ -24,36 +24,34 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
     return (
       <Link
         href={`/blog/${post.slug}`}
-        className="flex gap-4 items-start p-4 bg-white border border-[#e8ddd0] hover:border-[#d4b896] rounded-lg transition-all hover:shadow-sm hover:bg-[#faf8f5]"
+        className="flex gap-5 items-start px-5 py-4 bg-white border border-[#e8ddd0] hover:border-[#d4b896] rounded-lg transition-all hover:shadow-sm hover:bg-[#faf8f5]"
       >
         <div className="flex-1 min-w-0">
-          <h2 className="font-serif text-base font-bold text-[#1a1208] mb-1 truncate">
+          <h2 className="font-serif text-base font-bold text-[#1a1208] mb-1 line-clamp-2">
             {post.title}
           </h2>
           {post.description && (
-            <p className="text-sm text-[#7a6a52] line-clamp-2">
+            <p className="text-sm text-[#7a6a52] line-clamp-2 mb-2">
               {post.description}
             </p>
           )}
-        </div>
-        <div className="flex flex-col items-end shrink-0 gap-2">
-          <p className="text-xs text-[#b0977a] whitespace-nowrap">{dateStr}</p>
           {post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 justify-end">
-              {post.tags.slice(0, 2).map((tag) => (
+            <div className="flex flex-wrap gap-1.5">
+              {post.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2 py-0.5 rounded-full"
+                  className="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"
                 >
                   {tag}
                 </span>
               ))}
-              {post.tags.length > 2 && (
-                <span className="text-xs text-[#b0977a]">+{post.tags.length - 2}</span>
+              {post.tags.length > 3 && (
+                <span className="text-xs text-[#b0977a] pt-1">+{post.tags.length - 3}</span>
               )}
             </div>
           )}
         </div>
+        <p className="text-xs text-[#b0977a] whitespace-nowrap shrink-0 pt-0.5">{dateStr}</p>
       </Link>
     )
   }
