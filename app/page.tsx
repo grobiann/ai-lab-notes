@@ -11,42 +11,71 @@ export default async function HomePage() {
     .select('*')
     .eq('is_published', true)
     .order('published_at', { ascending: false })
-    .limit(5)
+    .limit(8)
   const posts = data as Post[] | null
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-5xl mx-auto px-6">
       {/* Hero */}
-      <section className="mb-16">
-        <p className="text-xs font-semibold tracking-widest uppercase text-[#c07a2f] mb-3">
-          Blog & Dev Notes
-        </p>
-        <h1 className="font-serif text-4xl font-bold tracking-tight text-[#1a1208] mb-4">
-          AI Lab Notes
-        </h1>
-        <p className="text-[#7a6a52] text-lg leading-relaxed max-w-xl">
-          AI·개발 학습 과정에서 발견한 것들을 기록합니다.
-          Unity, PostgreSQL, 그리고 그 사이의 모든 것.
-        </p>
+      <section className="py-24 border-b border-[#e8ddd0]">
+        <div className="text-center">
+          {/* Decorative line */}
+          <div className="flex justify-center mb-6">
+            <div className="w-12 h-0.5 bg-[#c07a2f]" />
+          </div>
+
+          {/* Eyebrow */}
+          <p className="text-xs font-semibold tracking-widest uppercase text-[#c07a2f] mb-4">
+            AI · Dev Notes
+          </p>
+
+          {/* Main heading */}
+          <h1 className="font-serif text-6xl font-black tracking-tight text-[#1a1208] mb-6 leading-tight">
+            AI Lab Notes
+          </h1>
+
+          {/* Subheading */}
+          <p className="text-xl text-[#7a6a52] leading-relaxed max-w-2xl mx-auto mb-10">
+            게임 개발자의 AI·개발 학습 기록.
+            <br />
+            Unity, PostgreSQL, 그리고 그 사이의 모든 것.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex items-center justify-center gap-4">
+            <Link
+              href="/blog"
+              className="px-6 py-2.5 bg-[#c07a2f] text-white font-medium rounded-lg hover:bg-[#a8672a] transition-colors"
+            >
+              블로그 읽기 →
+            </Link>
+            <Link
+              href="/about"
+              className="px-6 py-2.5 border border-[#c07a2f] text-[#c07a2f] font-medium rounded-lg hover:bg-[#fdf3e3] transition-colors"
+            >
+              About me
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Recent Posts */}
       {posts && posts.length > 0 ? (
-        <section>
-          <div className="flex items-center justify-between mb-6">
+        <section className="py-16">
+          <div className="flex items-center justify-between mb-8 pb-6 border-b border-[#e8ddd0]">
             <h2 className="font-serif text-2xl font-bold text-[#1a1208]">
               최근 글
             </h2>
             <Link
               href="/blog"
-              className="text-sm text-[#c07a2f] hover:text-[#a86828] transition-colors"
+              className="text-sm text-[#c07a2f] hover:text-[#a8672a] font-medium transition-colors"
             >
               전체 보기 →
             </Link>
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post.id} post={post} mode="compact" />
             ))}
           </div>
         </section>
