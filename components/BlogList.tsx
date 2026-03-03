@@ -20,6 +20,41 @@ export default function BlogList({ posts }: { posts: Post[] }) {
     return Array.from(new Set(cats)).sort()
   }, [posts])
 
+  // 카테고리 트리 구조 구성
+  interface CategoryNode {
+    name: string
+    path: string
+    children: CategoryNode[]
+  }
+
+  const categoryTree = useMemo(() => {
+    const root: Map<string, CategoryNode> = new Map()
+
+    categories.forEach((cat) => {
+      const parts = cat.split('/')
+      let currentPath = ''
+
+      parts.forEach((part, index) => {
+        currentPath = currentPath ? `${currentPath}/${part}` : part
+
+        if (!root.has(currentPath)) {
+          const node: CategoryNode = { name: part, path: currentPath, children: [] }
+          if (index === 0) {
+            root.set(currentPath, node)
+          } else {
+            const parentPath = parts.slice(0, index).join('/')
+            const parent = root.get(parentPath)
+            if (parent) {
+              parent.children.push(node)
+            }
+          }
+        }
+      })
+    })
+
+    return Array.from(root.values()).sort((a, b) => a.name.localeCompare(b.name))
+  }, [categories])
+
   // 필터링된 글 목록
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
@@ -53,6 +88,25 @@ export default function BlogList({ posts }: { posts: Post[] }) {
     return count
   }, [posts])
 
+  // 트리 노드 렌더링 함수
+  const renderCategoryNode = (node: CategoryNode, depth: number = 0) => (
+    <div key={node.path}>
+      <button
+        onClick={() => setSelectedCategory(node.path)}
+        className={`w-full text-left text-sm px-3 py-1 rounded-lg transition-colors flex justify-between items-center ${
+          selectedCategory === node.path
+            ? 'bg-[#c07a2f] text-white font-medium'
+            : 'text-[#7a6a52] hover:bg-[#faf8f5]'
+        }`}
+        style={{ paddingLeft: `${12 + depth * 16}px` }}
+      >
+        <span>{node.name}</span>
+        <span className="text-xs opacity-75">({categoryCount[node.path] || 0})</span>
+      </button>
+      {node.children.map((child) => renderCategoryNode(child, depth + 1))}
+    </div>
+  )
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-16">
       <div className="flex gap-8">
@@ -85,20 +139,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
                 >
                   전체
                 </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`w-full text-left text-sm px-3 py-1 rounded-lg transition-colors flex justify-between items-center ${
-                      selectedCategory === cat
-                        ? 'bg-[#c07a2f] text-white font-medium'
-                        : 'text-[#7a6a52] hover:bg-[#faf8f5]'
-                    }`}
-                  >
-                    <span>{cat}</span>
-                    <span className="text-xs opacity-75">({categoryCount[cat]})</span>
-                  </button>
-                ))}
+                {categoryTree.map((node) => renderCategoryNode(node))}
               </div>
             </div>
           )}
