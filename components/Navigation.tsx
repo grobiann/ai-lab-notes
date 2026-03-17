@@ -12,46 +12,36 @@ export default function Navigation() {
     return false
   }
 
+  const navLinks = [
+    { href: '/', label: '홈' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/projects', label: 'Projects' },
+    { href: '/about', label: 'About' },
+  ]
+
   return (
-    <header className="border-b border-[#e8ddd0] bg-[#faf8f5]">
-      <nav className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
+      <nav className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link
           href="/"
-          className="font-serif text-xl font-bold text-[#1a1208] hover:text-[#c07a2f] transition-colors"
+          className="font-bold text-lg text-gray-900 hover:text-[#c07a2f] transition-colors"
         >
-          AI Lab Notes
+          블로그
         </Link>
-        <div className="flex items-center gap-6">
-          <Link
-            href="/blog"
-            className={`text-sm transition-colors ${
-              isActive('/blog')
-                ? 'text-[#c07a2f] font-medium'
-                : 'text-[#7a6a52] hover:text-[#c07a2f]'
-            }`}
-          >
-            Blog
-          </Link>
-          <Link
-            href="/projects"
-            className={`text-sm transition-colors ${
-              isActive('/projects')
-                ? 'text-[#c07a2f] font-medium'
-                : 'text-[#7a6a52] hover:text-[#c07a2f]'
-            }`}
-          >
-            Projects
-          </Link>
-          <Link
-            href="/about"
-            className={`text-sm transition-colors ${
-              isActive('/about')
-                ? 'text-[#c07a2f] font-medium'
-                : 'text-[#7a6a52] hover:text-[#c07a2f]'
-            }`}
-          >
-            About
-          </Link>
+        <div className="flex items-center gap-1">
+          {navLinks.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`text-sm px-3 py-1.5 rounded-md transition-colors ${
+                isActive(href)
+                  ? 'text-[#c07a2f] font-semibold bg-orange-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
         </div>
       </nav>
     </header>
