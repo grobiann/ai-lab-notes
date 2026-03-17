@@ -29,28 +29,38 @@ app/
 ├── globals.css                # 글로벌 스타일
 ├── page.tsx                   # 홈 (최근 글 목록)
 ├── blog/
-│   ├── page.tsx               # /blog 전체 목록
+│   ├── page.tsx               # /blog 전체 목록 (카테고리 필터 포함)
 │   └── [slug]/page.tsx        # /blog/:slug 글 상세
+├── projects/page.tsx          # /projects 포트폴리오
 ├── about/page.tsx             # /about
 ├── login/page.tsx             # 어드민 로그인 (Supabase Auth)
 ├── admin/
 │   ├── layout.tsx             # 인증 보호 (미로그인 → /login)
 │   ├── AdminNav.tsx           # 어드민 상단 네비 (Client Component)
 │   ├── PostForm.tsx           # 글 작성/수정 공용 폼 (Client Component)
+│   ├── ProjectForm.tsx        # 프로젝트 작성/수정 공용 폼 (Client Component)
 │   ├── page.tsx               # 어드민 대시보드 (글 목록)
-│   └── posts/
-│       ├── new/page.tsx       # 새 글 작성
-│       └── [id]/page.tsx      # 글 수정
-└── api/auth/callback/route.ts # Supabase Auth 콜백
+│   ├── posts/
+│   │   ├── new/page.tsx       # 새 글 작성
+│   │   └── [id]/page.tsx      # 글 수정
+│   └── projects/
+│       ├── page.tsx           # 프로젝트 목록
+│       ├── new/page.tsx       # 새 프로젝트 추가
+│       └── [id]/page.tsx      # 프로젝트 수정
+└── api/
+    ├── auth/callback/route.ts # Supabase Auth 콜백
+    └── revalidate/route.ts    # On-Demand ISR (POST /api/revalidate)
 components/
 ├── Navigation.tsx             # 사이트 상단 네비
 ├── Footer.tsx                 # 사이트 푸터
-└── PostCard.tsx               # 블로그 목록 카드
+├── PostCard.tsx               # 블로그 목록 카드
+└── BlogList.tsx               # 블로그 목록 + 카테고리 필터 (Client Component)
 lib/
 ├── supabase/
 │   ├── client.ts              # 브라우저용 ('use client' 환경)
-│   └── server.ts              # 서버 컴포넌트용
-└── types.ts                   # Post, Database 타입
+│   ├── server.ts              # 서버 컴포넌트용 (cookies 사용)
+│   └── public.ts              # 공개 페이지용 (ISR 캐싱 가능)
+└── types.ts                   # Post, Project, Database 타입
 middleware.ts                  # /admin 접근 인증 체크
 ```
 
@@ -86,6 +96,7 @@ CREATE TABLE posts (
   title        TEXT NOT NULL,
   slug         TEXT UNIQUE NOT NULL,
   description  TEXT,
+  category     TEXT,
   content      TEXT NOT NULL,
   tags         TEXT[] DEFAULT '{}',
   is_published BOOLEAN DEFAULT FALSE,
@@ -97,7 +108,31 @@ CREATE TABLE posts (
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public_read_published" ON posts FOR SELECT USING (is_published = TRUE);
 CREATE POLICY "admin_all" ON posts FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE TABLE projects (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title         TEXT NOT NULL,
+  company       TEXT,
+  period        TEXT,
+  description   TEXT NOT NULL,
+  tags          TEXT[] DEFAULT '{}',
+  type          TEXT NOT NULL CHECK (type IN ('work', 'personal')),
+  github        TEXT,
+  demo          TEXT,
+  display_order INTEGER DEFAULT 0,
+  created_at    TIMESTAMPTZ DEFAULT NOW(),
+  updated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_read_projects" ON projects FOR SELECT USING (TRUE);
+CREATE POLICY "admin_all_projects" ON projects FOR ALL USING (auth.role() = 'authenticated');
 ```
+
+> **기존 DB 마이그레이션**: 이미 `posts` 테이블이 있고 `category` 컬럼이 없다면:
+> ```sql
+> ALTER TABLE posts ADD COLUMN category TEXT;
+> ```
 
 ---
 
@@ -126,3 +161,4 @@ CREATE POLICY "admin_all" ON posts FOR ALL USING (auth.role() = 'authenticated')
 | 2026-02 초 | Astro + Tailwind 정적 사이트 구축 |
 | 2026-02 | Express + React 풀스택으로 전환 시도 (폐기) |
 | 2026-02-28 | Next.js 15 + Supabase + Vercel로 완전 재설계 |
+| 2026-03 | 카테고리 트리 필터, Projects 페이지, On-Demand ISR 추가 |
