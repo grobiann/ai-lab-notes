@@ -1,89 +1,158 @@
 import Link from 'next/link'
 import { supabasePublic } from '@/lib/supabase/public'
 import PostCard from '@/components/PostCard'
+import ProfileSidebar from '@/components/ProfileSidebar'
 import type { Post } from '@/lib/types'
 
 export const revalidate = 3600
 
+interface CategoryNode {
+  name: string
+  path: string
+  children: CategoryNode[]
+  count: number
+}
+
+function buildCategoryTree(posts: { id: string; category: string | null }[]): CategoryNode[] {
+  const countMap: Record<string, number> = {}
+  posts.forEach((p) => {
+    if (!p.category) return
+    const parts = p.category.split('/')
+    parts.forEach((_, i) => {
+      const path = parts.slice(0, i + 1).join('/')
+      countMap[path] = (countMap[path] ?? 0) + (i === parts.length - 1 ? 1 : 0)
+    })
+  })
+  // 부모 카테고리 집계
+  Object.keys(countMap).forEach((cat) => {
+    const parts = cat.split('/')
+    for (let i = 1; i < parts.length; i++) {
+      const parent = parts.slice(0, i).join('/')
+      countMap[parent] = (countMap[parent] ?? 0) + countMap[cat]
+    }
+  })
+
+  const root = new Map<string, CategoryNode>()
+  const allCats = posts
+    .map((p) => p.category)
+    .filter((c): c is string => !!c)
+  const unique = Array.from(new Set(allCats)).sort()
+
+  unique.forEach((cat) => {
+    const parts = cat.split('/')
+    let currentPath = ''
+    parts.forEach((part, index) => {
+      currentPath = currentPath ? `${currentPath}/${part}` : part
+      if (!root.has(currentPath)) {
+        const node: CategoryNode = { name: part, path: currentPath, children: [], count: countMap[currentPath] ?? 0 }
+        if (index === 0) {
+          root.set(currentPath, node)
+        } else {
+          const parentPath = parts.slice(0, index).join('/')
+          root.get(parentPath)?.children.push(node)
+        }
+      }
+    })
+  })
+
+  return Array.from(root.values()).sort((a, b) => a.name.localeCompare(b.name))
+}
+
 export default async function HomePage() {
-  const { data } = await supabasePublic
-    .from('posts')
-    .select('*')
-    .eq('is_published', true)
-    .order('published_at', { ascending: false })
-    .limit(6)
-  const posts = data as Post[] | null
+  const [{ data: recentData }, { data: catData }] = await Promise.all([
+    supabasePublic
+      .from('posts')
+      .select('*')
+      .eq('is_published', true)
+      .order('published_at', { ascending: false })
+      .limit(8),
+    supabasePublic
+      .from('posts')
+      .select('id, category')
+      .eq('is_published', true),
+  ])
+
+  const posts = recentData as Post[] | null
+  const categoryTree = buildCategoryTree((catData ?? []) as { id: string; category: string | null }[])
+  const totalPosts = (catData ?? []).length
+
+  const renderNode = (node: CategoryNode, depth = 0): React.ReactNode => (
+    <div key={node.path}>
+      <Link
+        href={`/blog`}
+        className="flex justify-between items-center text-xs text-gray-600 hover:text-[#c07a2f] py-1 transition-colors"
+        style={{ paddingLeft: `${depth * 10}px` }}
+      >
+        <span>{node.name}</span>
+        <span className="text-gray-400">({node.count})</span>
+      </Link>
+      {node.children.map((child) => renderNode(child, depth + 1))}
+    </div>
+  )
 
   return (
-    <div className="max-w-5xl mx-auto px-6">
-      {/* Hero */}
-      <section className="py-24 border-b border-[#e8ddd0]">
-        <div className="text-center">
-          {/* Decorative line */}
-          <div className="flex justify-center mb-6">
-            <div className="w-16 h-1 bg-[#c07a2f] rounded-full" />
-          </div>
+    <div className="max-w-5xl mx-auto px-4 py-6">
+      <div className="flex gap-5">
+        {/* 좌측: 프로필 사이드바 */}
+        <ProfileSidebar />
 
-          {/* Eyebrow */}
-          <p className="text-xs font-semibold tracking-widest uppercase text-[#c07a2f] mb-4">
-            AI · Dev Notes
-          </p>
-
-          {/* Main heading */}
-          <h1 className="font-serif text-6xl font-black tracking-tight text-[#1a1208] mb-6 leading-tight">
-            AI Lab Notes
-          </h1>
-
-          {/* Subheading */}
-          <p className="text-xl text-[#7a6a52] leading-relaxed max-w-2xl mx-auto mb-10">
-            게임 개발자의 AI·개발 학습 기록.
-            <br />
-            Unity, PostgreSQL, 그리고 그 사이의 모든 것.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex items-center justify-center gap-4">
+        {/* 가운데: 최근 글 */}
+        <main className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-bold text-gray-900">최근 글</h2>
             <Link
               href="/blog"
-              className="px-6 py-2.5 bg-[#c07a2f] text-white font-medium rounded-lg hover:bg-[#a8672a] transition-colors"
-            >
-              블로그 읽기 →
-            </Link>
-            <Link
-              href="/about"
-              className="px-6 py-2.5 border border-[#c07a2f] text-[#c07a2f] font-medium rounded-lg hover:bg-[#fdf3e3] transition-colors"
-            >
-              About me
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Recent Posts */}
-      {posts && posts.length > 0 ? (
-        <section className="py-16">
-          <div className="flex items-center justify-between mb-8 pb-6 border-b border-[#e8ddd0]">
-            <h2 className="font-serif text-2xl font-bold text-[#1a1208]">
-              최근 글
-            </h2>
-            <Link
-              href="/blog"
-              className="text-sm text-[#c07a2f] hover:text-[#a8672a] font-medium transition-colors"
+              className="text-xs text-[#c07a2f] hover:underline"
             >
               전체 보기 →
             </Link>
           </div>
-          <div className="flex flex-col gap-3">
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} mode="list" />
-            ))}
+
+          {posts && posts.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {posts.map((post) => (
+                <PostCard key={post.id} post={post} mode="compact" />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+              <p className="text-gray-400 text-sm">아직 글이 없습니다.</p>
+            </div>
+          )}
+        </main>
+
+        {/* 우측: 카테고리 */}
+        <aside className="w-44 shrink-0">
+          <div className="bg-white border border-gray-200 rounded-lg p-4 mb-3">
+            <h3 className="font-bold text-sm text-gray-900 mb-3">카테고리</h3>
+            <Link
+              href="/blog"
+              className="flex justify-between items-center text-xs text-gray-600 hover:text-[#c07a2f] py-1 transition-colors"
+            >
+              <span>전체</span>
+              <span className="text-gray-400">({totalPosts})</span>
+            </Link>
+            {categoryTree.length > 0 ? (
+              <div className="mt-1 space-y-0.5">
+                {categoryTree.map((node) => renderNode(node))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400 mt-2">카테고리 없음</p>
+            )}
           </div>
-        </section>
-      ) : (
-        <section className="text-center py-16">
-          <p className="text-[#b0977a]">아직 글이 없습니다.</p>
-        </section>
-      )}
+
+          {/* 태그 바로가기 */}
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <h3 className="font-bold text-sm text-gray-900 mb-2">바로가기</h3>
+            <Link href="/projects" className="block text-xs text-gray-600 hover:text-[#c07a2f] py-1 transition-colors">
+              🗂 프로젝트
+            </Link>
+            <Link href="/about" className="block text-xs text-gray-600 hover:text-[#c07a2f] py-1 transition-colors">
+              👤 소개
+            </Link>
+          </div>
+        </aside>
+      </div>
     </div>
   )
 }

@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import { createClient } from '@/lib/supabase/server'
+import ProfileSidebar from '@/components/ProfileSidebar'
 import type { Post } from '@/lib/types'
 
 type Props = {
@@ -48,39 +50,95 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post) notFound()
 
+  const dateStr = post.published_at ? formatDate(post.published_at) : formatDate(post.created_at)
+
   return (
-    <article className="max-w-2xl mx-auto px-6 py-16">
-      {/* 헤더 */}
-      <header className="mb-10">
-        <div className="flex flex-wrap gap-2 mb-4">
-          {post.tags.map((tag) => (
-            <span
-              key={tag}
-              className="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"
+    <div className="max-w-5xl mx-auto px-4 py-6">
+      <div className="flex gap-5">
+        {/* 좌측: 프로필 사이드바 */}
+        <ProfileSidebar />
+
+        {/* 가운데: 본문 */}
+        <article className="flex-1 min-w-0">
+          {/* 뒤로가기 */}
+          <div className="mb-4">
+            <Link href="/blog" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+              ← 목록으로
+            </Link>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-8">
+            {/* 헤더 */}
+            <header className="mb-8">
+              {post.category && (
+                <p className="text-xs font-medium text-[#c07a2f] mb-2">{post.category}</p>
+              )}
+              <h1 className="font-bold text-2xl text-gray-900 leading-snug mb-3">
+                {post.title}
+              </h1>
+              {post.description && (
+                <p className="text-sm text-gray-500 mb-3">{post.description}</p>
+              )}
+              <p className="text-xs text-gray-400">{dateStr}</p>
+            </header>
+
+            <hr className="border-gray-100 mb-8" />
+
+            {/* 본문 */}
+            <div className="prose prose-warm max-w-none prose-sm">
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+                {post.content}
+              </ReactMarkdown>
+            </div>
+          </div>
+        </article>
+
+        {/* 우측: 메타 정보 */}
+        <aside className="w-44 shrink-0">
+          <div className="bg-white border border-gray-200 rounded-lg p-4 sticky top-20">
+            <h3 className="font-bold text-sm text-gray-900 mb-3">글 정보</h3>
+
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs text-gray-400 mb-1">작성일</p>
+                <p className="text-xs text-gray-700">{dateStr}</p>
+              </div>
+
+              {post.category && (
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">카테고리</p>
+                  <p className="text-xs text-[#c07a2f]">{post.category}</p>
+                </div>
+              )}
+
+              {post.tags.length > 0 && (
+                <div>
+                  <p className="text-xs text-gray-400 mb-2">태그</p>
+                  <div className="flex flex-wrap gap-1">
+                    {post.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs text-[#c07a2f] bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <hr className="border-gray-100 my-4" />
+
+            <Link
+              href="/blog"
+              className="block text-center text-xs text-gray-500 hover:text-[#c07a2f] transition-colors"
             >
-              {tag}
-            </span>
-          ))}
-        </div>
-        <h1 className="font-serif text-4xl font-black text-[#1a1208] leading-tight mb-4">
-          {post.title}
-        </h1>
-        {post.description && (
-          <p className="text-lg text-[#7a6a52] mb-4">{post.description}</p>
-        )}
-        <p className="text-sm text-[#b0977a]">
-          {post.published_at ? formatDate(post.published_at) : formatDate(post.created_at)}
-        </p>
-      </header>
-
-      <hr className="border-[#e8ddd0] mb-10" />
-
-      {/* 본문 */}
-      <div className="prose prose-warm max-w-none">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
-          {post.content}
-        </ReactMarkdown>
+              ← 목록으로
+            </Link>
+          </div>
+        </aside>
       </div>
-    </article>
+    </div>
   )
 }
