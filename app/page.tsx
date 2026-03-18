@@ -107,10 +107,10 @@ export default async function HomePage() {
         {/* 좌측: 프로필 사이드바 */}
         <ProfileSidebar />
 
-        {/* 가운데: 블로그 */}
+        {/* 가운데: 최근 글 */}
         <main className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-lg text-gray-900">블로그</h2>
+            <h2 className="font-bold text-gray-900">최근 글</h2>
             <Link
               href="/blog"
               className="text-xs text-[#c07a2f] hover:underline"
