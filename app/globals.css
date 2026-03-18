@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+}
+
 html {
   scroll-behavior: smooth;
 }

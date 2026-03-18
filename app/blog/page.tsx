@@ -11,12 +11,19 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogPage() {
-  const { data } = await supabasePublic
-    .from('posts')
-    .select('*')
-    .eq('is_published', true)
-    .order('published_at', { ascending: false })
-  const posts = (data as Post[]) || []
+  let posts: Post[] = []
+  if (supabasePublic) {
+    try {
+      const { data } = await supabasePublic
+        .from('posts')
+        .select('*')
+        .eq('is_published', true)
+        .order('published_at', { ascending: false })
+      posts = (data as Post[]) || []
+    } catch {
+      // DB 연결 실패 시 빈 목록으로 폴백
+    }
+  }
 
   return <BlogList posts={posts} />
 }

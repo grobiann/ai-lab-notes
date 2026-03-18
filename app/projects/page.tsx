@@ -64,11 +64,18 @@ function ProjectCard({ project }: { project: Project }) {
 }
 
 export default async function ProjectsPage() {
-  const { data } = await supabasePublic
-    .from('projects')
-    .select('*')
-    .order('display_order', { ascending: true })
-  const projects = data as Project[] | null
+  let projects: Project[] | null = null
+  if (supabasePublic) {
+    try {
+      const { data } = await supabasePublic
+        .from('projects')
+        .select('*')
+        .order('display_order', { ascending: true })
+      projects = data as Project[] | null
+    } catch {
+      // DB 연결 실패 시 빈 목록으로 폴백
+    }
+  }
 
   const workProjects = projects?.filter((p) => p.type === 'work') ?? []
   const personalProjects = projects?.filter((p) => p.type === 'personal') ?? []

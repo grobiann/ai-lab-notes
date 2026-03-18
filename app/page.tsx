@@ -59,20 +59,31 @@ function buildCategoryTree(posts: { id: string; category: string | null }[]): Ca
 }
 
 export default async function HomePage() {
-  const [{ data: recentData }, { data: catData }] = await Promise.all([
-    supabasePublic
-      .from('posts')
-      .select('*')
-      .eq('is_published', true)
-      .order('published_at', { ascending: false })
-      .limit(8),
-    supabasePublic
-      .from('posts')
-      .select('id, category')
-      .eq('is_published', true),
-  ])
+  let recentData: Post[] | null = null
+  let catData: { id: string; category: string | null }[] | null = null
 
-  const posts = recentData as Post[] | null
+  if (supabasePublic) {
+    try {
+      const [recentRes, catRes] = await Promise.all([
+        supabasePublic
+          .from('posts')
+          .select('*')
+          .eq('is_published', true)
+          .order('published_at', { ascending: false })
+          .limit(8),
+        supabasePublic
+          .from('posts')
+          .select('id, category')
+          .eq('is_published', true),
+      ])
+      recentData = recentRes.data as Post[] | null
+      catData = catRes.data as { id: string; category: string | null }[] | null
+    } catch {
+      // DB 연결 실패 시 빈 목록으로 폴백
+    }
+  }
+
+  const posts = recentData
   const categoryTree = buildCategoryTree((catData ?? []) as { id: string; category: string | null }[])
   const totalPosts = (catData ?? []).length
 
