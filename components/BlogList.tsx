@@ -94,7 +94,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
         onClick={() => setSelectedCategory(node.path)}
         className={`w-full text-left text-xs px-2 py-1.5 rounded transition-colors flex justify-between items-center ${
           selectedCategory === node.path
-            ? 'bg-indigo text-white font-medium'
+            ? 'bg-[#c07a2f] text-white font-medium'
             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
         }`}
         style={{ paddingLeft: `${8 + depth * 12}px` }}
@@ -110,7 +110,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
     <div className="max-w-5xl mx-auto px-4 py-6">
       <div className="flex gap-5">
         {/* 좌측: 프로필 + 검색 */}
-        <div className="w-48 shrink-0">
+        <div className="w-52 shrink-0">
           <ProfileSidebar />
           <div className="mt-3 bg-white border border-gray-200 rounded-lg p-4">
             <h3 className="font-bold text-sm text-gray-900 mb-2">검색</h3>
@@ -119,7 +119,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
               placeholder="제목·설명·태그..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-1.5 border border-gray-200 rounded text-xs focus:outline-none focus:border-indigo bg-white"
+              className="w-full px-3 py-1.5 border border-gray-200 rounded text-xs focus:outline-none focus:border-[#c07a2f] bg-white"
             />
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
                   title={title}
                   className={`p-1.5 rounded transition-colors ${
                     viewMode === mode
-                      ? 'bg-white shadow-sm text-indigo'
+                      ? 'bg-white shadow-sm text-[#c07a2f]'
                       : 'text-gray-400 hover:text-gray-600'
                   }`}
                 >
@@ -206,7 +206,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
                 onClick={() => setSelectedCategory(null)}
                 className={`w-full text-left text-xs px-2 py-1.5 rounded transition-colors flex justify-between items-center ${
                   selectedCategory === null
-                    ? 'bg-indigo text-white font-medium'
+                    ? 'bg-[#c07a2f] text-white font-medium'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
