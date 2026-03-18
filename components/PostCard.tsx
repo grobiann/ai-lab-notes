@@ -24,14 +24,14 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
     return (
       <Link
         href={`/blog/${post.slug}`}
-        className="flex gap-5 items-start px-5 py-4 bg-white border border-[#e8ddd0] hover:border-[#d4b896] rounded-lg transition-all hover:shadow-sm hover:bg-[#faf8f5]"
+        className="flex gap-5 items-start px-5 py-4 bg-white border border-gray-200 hover:border-indigo-300 rounded-lg transition-all hover:shadow-sm hover:bg-indigo-pale"
       >
         <div className="flex-1 min-w-0">
-          <h2 className="font-semibold text-[#1a1208] mb-1 line-clamp-2">
+          <h2 className="font-semibold text-gray-900 mb-1 line-clamp-2">
             {post.title}
           </h2>
           {post.description && (
-            <p className="text-sm text-[#7a6a52] line-clamp-2 mb-2">
+            <p className="text-sm text-gray-600 line-clamp-2 mb-2">
               {post.description}
             </p>
           )}
@@ -40,18 +40,18 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
               {post.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"
+                  className="text-xs font-medium text-indigo text-indigo-pale bg-indigo-pale px-2.5 py-1 rounded-full"
                 >
                   {tag}
                 </span>
               ))}
               {post.tags.length > 3 && (
-                <span className="text-xs text-[#b0977a] pt-1">+{post.tags.length - 3}</span>
+                <span className="text-xs text-gray-500 pt-1">+{post.tags.length - 3}</span>
               )}
             </div>
           )}
         </div>
-        <p className="text-xs text-[#b0977a] whitespace-nowrap shrink-0 pt-0.5">{dateStr}</p>
+        <p className="text-xs text-gray-400 whitespace-nowrap shrink-0 pt-0.5">{dateStr}</p>
       </Link>
     )
   }
@@ -61,12 +61,12 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
     return (
       <Link
         href={`/blog/${post.slug}`}
-        className="flex justify-between items-center p-3 border-b border-[#e8ddd0] hover:bg-[#faf8f5] transition-colors"
+        className="flex justify-between items-center p-3 border-b border-gray-200 hover:bg-indigo-pale transition-colors"
       >
-        <h2 className="font-notosans text-[#1a1208] truncate flex-1">
+        <h2 className="font-notosans text-gray-900 truncate flex-1">
           {post.title}
         </h2>
-        <p className="text-xs text-[#b0977a] ml-4 shrink-0">{dateStr}</p>
+        <p className="text-xs text-gray-400 ml-4 shrink-0">{dateStr}</p>
       </Link>
     )
   }
@@ -75,27 +75,27 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="block bg-white border border-[#e8ddd0] hover:border-[#d4b896] rounded-xl p-6 transition-all hover:shadow-sm"
+      className="block bg-white border border-gray-200 hover:border-indigo-300 rounded-xl p-6 transition-all hover:shadow-sm"
     >
       <div className="flex flex-wrap gap-2 mb-3">
         {post.tags.map((tag) => (
           <span
             key={tag}
-            className="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"
+            className="text-xs font-medium text-indigo bg-indigo-pale px-2.5 py-1 rounded-full"
           >
             {tag}
           </span>
         ))}
       </div>
-      <h2 className="font-semibold text-[#1a1208] mb-2 leading-snug">
+      <h2 className="font-semibold text-gray-900 mb-2 leading-snug">
         {post.title}
       </h2>
       {post.description && (
-        <p className="text-sm text-[#7a6a52] mb-4 line-clamp-2">
+        <p className="text-sm text-gray-600 mb-4 line-clamp-2">
           {post.description}
         </p>
       )}
-      <p className="text-xs text-[#b0977a]">{dateStr}</p>
+      <p className="text-xs text-gray-400">{dateStr}</p>
     </Link>
   )
 }

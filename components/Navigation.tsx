@@ -38,8 +38,8 @@ export default function Navigation() {
               href={href}
               className={`text-sm px-4 py-2 rounded-md transition-colors ${
                 isActive(href)
-                  ? 'text-[#c07a2f] font-semibold bg-orange-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-indigo font-semibold bg-indigo-pale'
+                  : 'text-gray-700 hover:text-indigo hover:bg-indigo-pale'
               }`}
             >
               {label}

@@ -15,6 +15,11 @@ const config: Config = {
           light: '#e8a84e',
           pale: '#fdf3e3',
         },
+        indigo: {
+          DEFAULT: '#4f46e5',
+          light: '#818cf8',
+          pale: '#eef2ff',
+        },
         ink: {
           dark: '#1a1208',
           DEFAULT: '#2c2416',

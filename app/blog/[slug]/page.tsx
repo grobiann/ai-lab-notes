@@ -71,7 +71,7 @@ export default async function BlogPostPage({ params }: Props) {
             {/* 헤더 */}
             <header className="mb-8">
               {post.category && (
-                <p className="text-xs font-medium text-[#c07a2f] mb-2">{post.category}</p>
+                <p className="text-xs font-medium text-indigo mb-2">{post.category}</p>
               )}
               <h1 className="font-bold text-2xl text-gray-900 leading-snug mb-3">
                 {post.title}
@@ -107,7 +107,7 @@ export default async function BlogPostPage({ params }: Props) {
               {post.category && (
                 <div>
                   <p className="text-xs text-gray-400 mb-1">카테고리</p>
-                  <p className="text-xs text-[#c07a2f]">{post.category}</p>
+                  <p className="text-xs text-indigo">{post.category}</p>
                 </div>
               )}
 
@@ -118,7 +118,7 @@ export default async function BlogPostPage({ params }: Props) {
                     {post.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-xs text-[#c07a2f] bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100"
+                        className="text-xs text-indigo bg-indigo-pale px-2 py-0.5 rounded-full border border-indigo-light"
                       >
                         {tag}
                       </span>
@@ -132,7 +132,7 @@ export default async function BlogPostPage({ params }: Props) {
 
             <Link
               href="/blog"
-              className="block text-center text-xs text-gray-500 hover:text-[#c07a2f] transition-colors"
+              className="block text-center text-xs text-gray-500 hover:text-indigo transition-colors"
             >
               ← 목록으로
             </Link>

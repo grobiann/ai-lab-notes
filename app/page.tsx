@@ -91,7 +91,7 @@ export default async function HomePage() {
     <div key={node.path}>
       <Link
         href={`/blog`}
-        className="flex justify-between items-center text-xs text-gray-600 hover:text-[#c07a2f] py-1 transition-colors"
+        className="flex justify-between items-center text-xs text-gray-600 hover:text-indigo py-1 transition-colors"
         style={{ paddingLeft: `${depth * 10}px` }}
       >
         <span>{node.name}</span>
@@ -105,7 +105,9 @@ export default async function HomePage() {
     <div className="max-w-5xl mx-auto px-4 py-6">
       <div className="flex gap-5">
         {/* 좌측: 프로필 사이드바 */}
-        <ProfileSidebar />
+        <div className="w-48 shrink-0">
+          <ProfileSidebar />
+        </div>
 
         {/* 가운데: 블로그 */}
         <main className="flex-1 min-w-0">
@@ -113,7 +115,7 @@ export default async function HomePage() {
             <h2 className="font-bold text-lg text-gray-900">블로그</h2>
             <Link
               href="/blog"
-              className="text-xs text-[#c07a2f] hover:underline"
+              className="text-xs text-indigo hover:underline"
             >
               전체 보기 →
             </Link>
@@ -155,10 +157,10 @@ export default async function HomePage() {
           {/* 태그 바로가기 */}
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <h3 className="font-bold text-sm text-gray-900 mb-2">바로가기</h3>
-            <Link href="/projects" className="block text-xs text-gray-600 hover:text-[#c07a2f] py-1 transition-colors">
+            <Link href="/projects" className="block text-xs text-gray-600 hover:text-indigo py-1 transition-colors">
               🗂 프로젝트
             </Link>
-            <Link href="/about" className="block text-xs text-gray-600 hover:text-[#c07a2f] py-1 transition-colors">
+            <Link href="/about" className="block text-xs text-gray-600 hover:text-indigo py-1 transition-colors">
               👤 소개
             </Link>
           </div>
