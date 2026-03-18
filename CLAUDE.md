@@ -4,8 +4,8 @@ grobiann의 AI·개발 학습 블로그.
 **Next.js 15 + Supabase + Vercel** 풀스택 구조.
 
 - 저장소: https://github.com/grobiann/ai-lab-notes
-- **작업 브랜치: `claude/main-805bi`** (Claude의 모든 수정은 이 브랜치에 커밋·푸시)
-- 배포 브랜치: `claude/review-and-test-build-9Vy8z` (기본 브랜치, Vercel 자동 배포)
+- **배포 브랜치: `main`** (Vercel 프로덕션 브랜치 — push → 자동 배포)
+- **작업 브랜치: `claude/<task>-<id>`** (Claude의 모든 수정은 이 브랜치에 커밋·푸시, 완료 후 `main`에 fast-forward 머지)
 - 아키텍처 결정 기록: [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 **작업 완료 시 변경사항이 생기면 관련 CLAUDE 파일도 함께 최신화한다.**
@@ -72,7 +72,7 @@ middleware.ts                  # /admin 접근 인증 체크
 - **프레임워크**: Next.js 15 (App Router)
 - **DB + Auth**: Supabase (PostgreSQL + Row Level Security)
 - **호스팅**: Vercel (push → 자동 배포, 서버 불필요)
-- **배포 트리거**: `claude/review-and-test-build-9Vy8z` 브랜치 push → Vercel 자동 빌드
+- **배포 트리거**: `main` 브랜치 push → Vercel 자동 빌드
 
 ---
 
