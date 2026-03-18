@@ -5,13 +5,32 @@ export default function ProfileSidebar() {
     <aside className="w-52 shrink-0">
       {/* 프로필 카드 */}
       <div className="bg-white border border-gray-200 rounded-lg p-4 mb-3">
-        {/* 프로필 이미지 */}
-        <div className="flex justify-center mb-3">
-          <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-              <rect width="80" height="80" fill="#e5e7eb" />
-              <circle cx="40" cy="30" r="16" fill="#9ca3af" />
-              <ellipse cx="40" cy="72" rx="26" ry="22" fill="#9ca3af" />
+        {/* 프로필 이미지 - 귀여운 캐릭터 */}
+        <div className="flex justify-center mb-4">
+          <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-amber-100 to-amber-50 border-3 border-amber-200 flex items-center justify-center">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-20 h-20">
+              {/* 머리 */}
+              <circle cx="50" cy="40" r="28" fill="#ffa500" />
+              {/* 귀 */}
+              <circle cx="25" cy="20" r="10" fill="#ffa500" />
+              <circle cx="75" cy="20" r="10" fill="#ffa500" />
+              <circle cx="25" cy="20" r="6" fill="#ffb84d" />
+              <circle cx="75" cy="20" r="6" fill="#ffb84d" />
+              {/* 눈 */}
+              <circle cx="40" cy="35" r="4" fill="#fff" />
+              <circle cx="60" cy="35" r="4" fill="#fff" />
+              <circle cx="41" cy="35" r="2.5" fill="#000" />
+              <circle cx="61" cy="35" r="2.5" fill="#000" />
+              {/* 반짝이 */}
+              <circle cx="42" cy="33" r="1" fill="#fff" />
+              <circle cx="62" cy="33" r="1" fill="#fff" />
+              {/* 입 */}
+              <path d="M 45 50 Q 50 53 55 50" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+              {/* 얼굴 */}
+              <ellipse cx="50" cy="70" rx="22" ry="18" fill="#ffb84d" />
+              {/* 뺨 */}
+              <circle cx="28" cy="50" r="6" fill="#ffcccb" opacity="0.6" />
+              <circle cx="72" cy="50" r="6" fill="#ffcccb" opacity="0.6" />
             </svg>
           </div>
         </div>
@@ -45,23 +64,6 @@ export default function ProfileSidebar() {
         </div>
       </div>
 
-      {/* 네비게이션 */}
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        {[
-          { href: '/', label: '🏠 홈' },
-          { href: '/blog', label: '📝 블로그' },
-          { href: '/projects', label: '🗂 프로젝트' },
-          { href: '/about', label: '👤 소개' },
-        ].map(({ href, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100 last:border-0 transition-colors"
-          >
-            {label}
-          </Link>
-        ))}
-      </div>
     </aside>
   )
 }
