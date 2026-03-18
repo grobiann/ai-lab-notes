@@ -4,6 +4,7 @@ grobiann의 AI·개발 학습 블로그.
 **Next.js 15 + Supabase + Vercel** 풀스택 구조.
 
 - 저장소: https://github.com/grobiann/ai-lab-notes
+- **작업 브랜치: `claude/main`** (Claude의 모든 수정은 이 브랜치에 커밋·푸시)
 - 배포 브랜치: `claude/review-and-test-build-9Vy8z` (기본 브랜치, Vercel 자동 배포)
 - 아키텍처 결정 기록: [ARCHITECTURE.md](./ARCHITECTURE.md)
 
