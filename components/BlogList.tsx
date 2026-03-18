@@ -3,14 +3,10 @@
 import { useState, useMemo } from 'react'
 import type { Post } from '@/lib/types'
 import PostCard from './PostCard'
-import ProfileSidebar from './ProfileSidebar'
-
-type ViewMode = 'list' | 'compact' | 'card'
 
 export default function BlogList({ posts }: { posts: Post[] }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [viewMode, setViewMode] = useState<ViewMode>('compact')
 
   const categories = useMemo(() => {
     const cats = posts
@@ -107,116 +103,65 @@ export default function BlogList({ posts }: { posts: Post[] }) {
   )
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <div className="flex gap-5">
-        {/* 좌측: 프로필 + 검색 */}
-        <div className="w-52 shrink-0">
-          <ProfileSidebar />
-          <div className="mt-3 bg-white border border-gray-200 rounded-lg p-4">
-            <h3 className="font-bold text-sm text-gray-900 mb-2">검색</h3>
-            <input
-              type="text"
-              placeholder="제목·설명·태그..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-1.5 border border-gray-200 rounded text-xs focus:outline-none focus:border-[#c07a2f] bg-white"
-            />
-          </div>
+    <div className="bg-white min-h-screen">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* 상단 헤더 + 검색 */}
+        <div className="mb-8">
+          <h1 className="font-bold text-4xl text-gray-900 mb-2">블로그</h1>
+          <p className="text-gray-600 text-sm mb-4">
+            {filteredPosts.length !== posts.length
+              ? `${filteredPosts.length} / 전체 ${posts.length}개`
+              : `전체 ${posts.length}개`}
+          </p>
+
+          {/* 검색 */}
+          <input
+            type="text"
+            placeholder="제목·설명·태그로 검색..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#c07a2f] bg-white"
+          />
         </div>
 
-        {/* 가운데: 글 목록 */}
-        <main className="flex-1 min-w-0">
-          {/* 헤더 + 보기모드 */}
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="font-bold text-lg text-gray-900">블로그</h1>
-              <p className="text-xs text-gray-400 mt-0.5">
-                {filteredPosts.length !== posts.length
-                  ? `${filteredPosts.length} / 전체 ${posts.length}개`
-                  : `전체 ${posts.length}개`}
-              </p>
-            </div>
-            {/* 보기모드 토글 */}
-            <div className="flex gap-1 bg-gray-100 rounded p-0.5">
-              {([
-                { mode: 'list' as ViewMode, title: '목록', icon: (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" />
-                    <line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" />
-                    <line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
-                  </svg>
-                )},
-                { mode: 'compact' as ViewMode, title: '압축', icon: (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" />
-                    <line x1="8" y1="18" x2="21" y2="18" /><circle cx="4" cy="6" r="1" />
-                    <circle cx="4" cy="12" r="1" /><circle cx="4" cy="18" r="1" />
-                  </svg>
-                )},
-                { mode: 'card' as ViewMode, title: '카드', icon: (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
-                    <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-                  </svg>
-                )},
-              ]).map(({ mode, title, icon }) => (
+        <div className="flex gap-8">
+          {/* 좌측: 카테고리 목차 */}
+          <aside className="w-40 shrink-0">
+            <div className="sticky top-20">
+              <h3 className="font-bold text-sm text-gray-900 mb-3">카테고리</h3>
+              <div className="space-y-1">
                 <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  title={title}
-                  className={`p-1.5 rounded transition-colors ${
-                    viewMode === mode
-                      ? 'bg-white shadow-sm text-[#c07a2f]'
-                      : 'text-gray-400 hover:text-gray-600'
+                  onClick={() => setSelectedCategory(null)}
+                  className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
+                    selectedCategory === null
+                      ? 'bg-gray-100 text-[#c07a2f] font-semibold'
+                      : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  {icon}
+                  전체 ({posts.length})
                 </button>
-              ))}
+                {categoryTree.map((node) => renderCategoryNode(node))}
+              </div>
             </div>
-          </div>
+          </aside>
 
-          {filteredPosts.length > 0 ? (
-            <div className={
-              viewMode === 'list'
-                ? 'flex flex-col gap-2'
-                : viewMode === 'compact'
-                  ? 'flex flex-col bg-white border border-gray-200 rounded-lg overflow-hidden'
-                  : 'grid grid-cols-2 gap-3'
-            }>
-              {filteredPosts.map((post) => (
-                <PostCard key={post.id} post={post} mode={viewMode} />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white border border-gray-200 rounded-lg py-16 text-center">
-              <p className="text-gray-400 text-sm">
-                {searchQuery || selectedCategory ? '검색 결과가 없습니다.' : '아직 글이 없습니다.'}
-              </p>
-            </div>
-          )}
-        </main>
-
-        {/* 우측: 카테고리 */}
-        <aside className="w-44 shrink-0">
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <h3 className="font-bold text-sm text-gray-900 mb-3">카테고리</h3>
-            <div className="space-y-0.5">
-              <button
-                onClick={() => setSelectedCategory(null)}
-                className={`w-full text-left text-xs px-2 py-1.5 rounded transition-colors flex justify-between items-center ${
-                  selectedCategory === null
-                    ? 'bg-[#c07a2f] text-white font-medium'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              >
-                <span>전체</span>
-                <span className="opacity-70">({posts.length})</span>
-              </button>
-              {categoryTree.map((node) => renderCategoryNode(node))}
-            </div>
-          </div>
-        </aside>
+          {/* 중앙: 글 목록 */}
+          <main className="flex-1 min-w-0">
+            {filteredPosts.length > 0 ? (
+              <div className="space-y-3">
+                {filteredPosts.map((post) => (
+                  <PostCard key={post.id} post={post} mode="list" />
+                ))}
+              </div>
+            ) : (
+              <div className="py-16 text-center">
+                <p className="text-gray-400 text-sm">
+                  {searchQuery || selectedCategory ? '검색 결과가 없습니다.' : '아직 글이 없습니다.'}
+                </p>
+              </div>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   )
