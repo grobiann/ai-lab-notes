@@ -108,38 +108,14 @@ export default function BlogList({ posts }: { posts: Post[] }) {
     <div className="bg-body min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* 상단 헤더 + 검색 */}
-        <div className="mb-8">
-          {/* 토글 버튼들 */}
-          <div className="flex items-center gap-3 mb-6">
-            {/* 모바일: 카테고리 토글 */}
-            <button
-              onClick={() => setShowCategories(!showCategories)}
-              className="md:hidden px-3 py-2 text-xs font-medium text-ink-light border border-cream-400 rounded hover:bg-cream-100 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
-            >
-              카테고리 {showCategories ? '▲' : '▼'}
-            </button>
-            {/* 뷰 모드 토글 */}
-          </div>
-          <div className="flex gap-1 mb-6">
-            {[
-              { mode: 'compact' as const, icon: '−', label: 'Compact' },
-              { mode: 'list' as const, icon: '≡', label: 'List' },
-              { mode: 'card' as const, icon: '⊞', label: 'Card' },
-            ].map(({ mode, icon, label }) => (
-              <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
-                title={label}
-                className={`w-9 h-9 flex items-center justify-center text-sm font-medium transition-colors rounded border focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm ${
-                  viewMode === mode
-                    ? 'bg-amber-pale text-amber-warm border-amber-warm'
-                    : 'border-cream-400 text-ink-light hover:text-ink-dark hover:border-cream-300'
-                }`}
-              >
-                {icon}
-              </button>
-            ))}
-          </div>
+        <div className="mb-6">
+          {/* 모바일: 카테고리 토글 */}
+          <button
+            onClick={() => setShowCategories(!showCategories)}
+            className="md:hidden block mb-3 px-3 py-2 text-xs font-medium text-ink-light border border-cream-400 rounded hover:bg-cream-100 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
+          >
+            카테고리 {showCategories ? '▲' : '▼'}
+          </button>
 
           {/* 검색 */}
           <input
@@ -172,10 +148,31 @@ export default function BlogList({ posts }: { posts: Post[] }) {
             </div>
           </aside>
 
-          {/* 중앙: 글 목록 */}
+          {/* 중앙: 글 목록 + 뷰 토글 */}
           <main className="flex-1 min-w-0">
+            {/* 뷰 모드 토글 (오른쪽 정렬) */}
+            <div className="flex justify-end gap-1 mb-4">
+              {[
+                { mode: 'compact' as const, icon: '−', label: 'Compact' },
+                { mode: 'list' as const, icon: '≡', label: 'List' },
+                { mode: 'card' as const, icon: '⊞', label: 'Card' },
+              ].map(({ mode, icon, label }) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  title={label}
+                  className={`w-9 h-9 flex items-center justify-center text-sm font-medium transition-colors rounded border focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm ${
+                    viewMode === mode
+                      ? 'bg-amber-pale text-amber-warm border-amber-warm'
+                      : 'border-cream-400 text-ink-light hover:text-ink-dark hover:border-cream-300'
+                  }`}
+                >
+                  {icon}
+                </button>
+              ))}
+            </div>
             {filteredPosts.length > 0 ? (
-              <div className={viewMode === 'card' ? 'grid grid-cols-1 gap-4' : 'space-y-3'}>
+              <div className={viewMode === 'card' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'}>
                 {filteredPosts.map((post) => (
                   <PostCard key={post.id} post={post} mode={viewMode} />
                 ))}

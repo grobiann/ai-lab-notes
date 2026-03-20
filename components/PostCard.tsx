@@ -61,7 +61,7 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
     return (
       <Link
         href={`/blog/${post.slug}`}
-        className="flex justify-between items-center px-3 py-2 border-b border-cream-300 hover:bg-cream-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
+        className="flex justify-between items-center px-3 py-1.5 border-b border-cream-300 hover:bg-cream-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
       >
         <h2 className="font-sans text-sm text-ink-dark truncate flex-1">
           {post.title}

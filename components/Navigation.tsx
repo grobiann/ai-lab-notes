@@ -25,21 +25,6 @@ export default function Navigation() {
         >
           grobiann의 블로그
         </Link>
-        <div className="flex items-center gap-1">
-          {navLinks.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`text-sm px-3 py-1.5 rounded-md transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm ${
-                isActive(href)
-                  ? 'text-amber-warm font-semibold bg-amber-pale'
-                  : 'text-ink-light hover:text-ink-dark hover:bg-cream-100'
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
-        </div>
       </nav>
     </header>
   )

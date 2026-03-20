@@ -155,6 +155,49 @@ CREATE POLICY "admin_all_projects" ON projects FOR ALL USING (auth.role() = 'aut
 
 ---
 
+## 모바일 대응
+
+**완전 모바일 지원 — 375px 이상 모든 화면에서 최적화됨**
+
+### 구현 상세
+
+| 요소 | 모바일 (< 768px) | 데스크톱 (768px+) |
+|------|------------------|------------------|
+| **Navigation** | 브랜드명만 표시 | 브랜드명 표시 |
+| **BlogList 카테고리** | 토글 버튼으로 숨김/표시 | 항상 왼쪽 사이드바 표시 |
+| **TOC (목차)** | 숨김 | 오른쪽 사이드바 표시 (lg+) |
+| **PostCard list 모드** | `px-4` | `px-6` |
+| **Card 모드 그리드** | 1열 | 2열 (md+) / 3열 (lg+) |
+
+### 주요 수정사항
+
+1. **BlogContent.tsx**: TOC 숨김 — `hidden lg:block`
+   - 1024px 이하에서 불필요한 TOC 사이드바 제거
+
+2. **globals.css**: 오버플로우 방지
+   - `.prose pre`: `overflow-x: auto` (코드 블록 가로 스크롤)
+   - `.prose table`: `display: block; overflow-x: auto;` (테이블 가로 스크롤)
+
+3. **BlogList.tsx**: 모바일 카테고리 토글
+   - `showCategories` 상태로 모바일에서 카테고리 숨김/표시 제어
+   - md 이상에서는 `md:block` 항상 표시
+
+4. **PostCard.tsx**
+   - Compact 모드: `py-1.5` (높이 축소)
+   - List 모드: `px-4 sm:px-6` (모바일 패딩 조정)
+   - Font: `font-notosans` → `font-sans` (정의되지 않은 유틸리티 제거)
+
+5. **Card 모드 그리드**: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
+   - 모바일: 1열, 태블릿: 2열, 데스크톱: 3열
+
+### Tailwind 브레이크포인트 (기본값 유지)
+
+```
+sm: 640px  | md: 768px  | lg: 1024px  | xl: 1280px
+```
+
+---
+
 ## 변경 이력
 
 | 날짜 | 내용 |
