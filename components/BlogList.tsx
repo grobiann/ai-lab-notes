@@ -8,6 +8,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'list' | 'compact' | 'card'>('list')
+  const [showCategories, setShowCategories] = useState(false)
 
   const categories = useMemo(() => {
     const cats = posts
@@ -108,7 +109,17 @@ export default function BlogList({ posts }: { posts: Post[] }) {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* 상단 헤더 + 검색 */}
         <div className="mb-8">
-          {/* 뷰 모드 토글 */}
+          {/* 토글 버튼들 */}
+          <div className="flex items-center gap-3 mb-6">
+            {/* 모바일: 카테고리 토글 */}
+            <button
+              onClick={() => setShowCategories(!showCategories)}
+              className="md:hidden px-3 py-2 text-xs font-medium text-ink-light border border-cream-400 rounded hover:bg-cream-100 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
+            >
+              카테고리 {showCategories ? '▲' : '▼'}
+            </button>
+            {/* 뷰 모드 토글 */}
+          </div>
           <div className="flex gap-1 mb-6">
             {[
               { mode: 'compact' as const, icon: '−', label: 'Compact' },
@@ -141,8 +152,8 @@ export default function BlogList({ posts }: { posts: Post[] }) {
         </div>
 
         <div className="flex gap-8 flex-col md:flex-row">
-          {/* 좌측: 카테고리 목차 (md 이상에서 표시) */}
-          <aside className="md:w-40 md:shrink-0">
+          {/* 좌측: 카테고리 목차 (md 이상에서 항상 표시, 모바일에서는 토글) */}
+          <aside className={`md:w-40 md:shrink-0 ${showCategories ? 'block' : 'hidden'} md:block`}>
             <div className="md:sticky md:top-20">
               <h3 className="font-bold text-sm text-ink-dark mb-3">카테고리</h3>
               <div className="space-y-1">

@@ -76,7 +76,7 @@ export default function BlogContent({ post }: { post: Post }) {
 
       {/* 우측: Table of Contents (lg 이상) */}
       {headings.length > 0 && (
-        <aside className="lg:w-56 lg:shrink-0">
+        <aside className="hidden lg:block lg:w-56 lg:shrink-0">
           <div className="bg-card border border-cream-400 rounded-lg p-4 sticky top-20 max-h-[calc(100vh-120px)] overflow-y-auto">
             <h3 className="font-bold text-sm text-ink-dark mb-3">목차</h3>
             <nav className="space-y-2">

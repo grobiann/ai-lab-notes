@@ -24,7 +24,7 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
     return (
       <Link
         href={`/blog/${post.slug}`}
-        className="flex gap-5 items-start px-6 py-5 bg-card border border-cream-400 hover:border-cream-500 rounded-lg transition-all hover:shadow-sm hover:bg-cream-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
+        className="flex gap-5 items-start px-4 sm:px-6 py-5 bg-card border border-cream-400 hover:border-cream-500 rounded-lg transition-all hover:shadow-sm hover:bg-cream-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
       >
         <div className="flex-1 min-w-0">
           <h2 className="font-semibold text-sm text-ink-dark mb-1 line-clamp-2 leading-snug">
@@ -63,7 +63,7 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
         href={`/blog/${post.slug}`}
         className="flex justify-between items-center px-3 py-2 border-b border-cream-300 hover:bg-cream-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
       >
-        <h2 className="font-notosans text-sm text-ink-dark truncate flex-1">
+        <h2 className="font-sans text-sm text-ink-dark truncate flex-1">
           {post.title}
         </h2>
         <p className="text-xs text-ink-muted ml-4 shrink-0">{dateStr}</p>
