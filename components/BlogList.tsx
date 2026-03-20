@@ -107,25 +107,13 @@ export default function BlogList({ posts }: { posts: Post[] }) {
   return (
     <div className="bg-body min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* 상단 헤더 + 검색 */}
-        <div className="mb-6">
-          {/* 모바일: 카테고리 토글 */}
-          <button
-            onClick={() => setShowCategories(!showCategories)}
-            className="md:hidden block mb-3 px-3 py-2 text-xs font-medium text-ink-light border border-cream-400 rounded hover:bg-cream-100 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
-          >
-            카테고리 {showCategories ? '▲' : '▼'}
-          </button>
-
-          {/* 검색 */}
-          <input
-            type="text"
-            placeholder="제목·설명·태그로 검색..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2.5 border border-cream-400 rounded-lg text-sm bg-card text-ink-dark placeholder-ink-muted transition-all focus:outline-2 focus:outline-amber-warm focus:outline-offset-1 focus:bg-cream-50"
-          />
-        </div>
+        {/* 모바일: 카테고리 토글 */}
+        <button
+          onClick={() => setShowCategories(!showCategories)}
+          className="md:hidden block mb-6 px-3 py-2 text-xs font-medium text-ink-light border border-cream-400 rounded hover:bg-cream-100 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
+        >
+          카테고리 {showCategories ? '▲' : '▼'}
+        </button>
 
         <div className="flex gap-8 flex-col md:flex-row">
           {/* 좌측: 카테고리 목차 (md 이상에서 항상 표시, 모바일에서는 토글) */}
@@ -186,6 +174,15 @@ export default function BlogList({ posts }: { posts: Post[] }) {
             )}
           </main>
         </div>
+
+        {/* 검색 - 맨 아래 */}
+        <input
+          type="text"
+          placeholder="제목·설명·태그로 검색..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full px-4 py-2.5 border border-cream-400 rounded-lg text-sm bg-card text-ink-dark placeholder-ink-muted transition-all focus:outline-2 focus:outline-amber-warm focus:outline-offset-1 focus:bg-cream-50 mt-8"
+        />
       </div>
     </div>
   )
