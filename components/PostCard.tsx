@@ -24,7 +24,7 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
     return (
       <Link
         href={`/blog/${post.slug}`}
-        className="flex gap-5 items-start px-5 py-4 bg-card border border-cream-400 hover:border-cream-500 rounded-lg transition-all hover:shadow-sm hover:bg-cream-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
+        className="flex gap-5 items-start px-6 py-5 bg-card border border-cream-400 hover:border-cream-500 rounded-lg transition-all hover:shadow-sm hover:bg-cream-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
       >
         <div className="flex-1 min-w-0">
           <h2 className="font-semibold text-sm text-ink-dark mb-1 line-clamp-2 leading-snug">
