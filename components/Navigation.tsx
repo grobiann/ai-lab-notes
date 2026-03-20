@@ -23,7 +23,7 @@ export default function Navigation() {
           href="/"
           className="font-bold text-lg text-ink-dark hover:text-amber-warm transition-colors"
         >
-          블로그
+          grobiann의 블로그
         </Link>
         <div className="flex items-center gap-1">
           {navLinks.map(({ href, label }) => (

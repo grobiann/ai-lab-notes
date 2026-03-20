@@ -108,36 +108,26 @@ export default function BlogList({ posts }: { posts: Post[] }) {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* 상단 헤더 + 검색 */}
         <div className="mb-8">
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <div>
-              <h1 className="font-serif text-4xl sm:text-5xl font-black text-ink-dark mb-2">블로그</h1>
-              <p className="text-ink-light text-sm">
-                {filteredPosts.length !== posts.length
-                  ? `${filteredPosts.length} / 전체 ${posts.length}개`
-                  : `전체 ${posts.length}개`}
-              </p>
-            </div>
-            {/* 뷰 모드 토글 */}
-            <div className="flex gap-1">
-              {[
-                { mode: 'list' as const, icon: '≡', label: 'List' },
-                { mode: 'compact' as const, icon: '−', label: 'Compact' },
-                { mode: 'card' as const, icon: '⊞', label: 'Card' },
-              ].map(({ mode, icon, label }) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  title={label}
-                  className={`w-9 h-9 flex items-center justify-center text-sm font-medium transition-colors rounded border focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm ${
-                    viewMode === mode
-                      ? 'bg-amber-pale text-amber-warm border-amber-warm'
-                      : 'border-cream-400 text-ink-light hover:text-ink-dark hover:border-cream-300'
-                  }`}
-                >
-                  {icon}
-                </button>
-              ))}
-            </div>
+          {/* 뷰 모드 토글 */}
+          <div className="flex gap-1 mb-6">
+            {[
+              { mode: 'compact' as const, icon: '−', label: 'Compact' },
+              { mode: 'list' as const, icon: '≡', label: 'List' },
+              { mode: 'card' as const, icon: '⊞', label: 'Card' },
+            ].map(({ mode, icon, label }) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                title={label}
+                className={`w-9 h-9 flex items-center justify-center text-sm font-medium transition-colors rounded border focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm ${
+                  viewMode === mode
+                    ? 'bg-amber-pale text-amber-warm border-amber-warm'
+                    : 'border-cream-400 text-ink-light hover:text-ink-dark hover:border-cream-300'
+                }`}
+              >
+                {icon}
+              </button>
+            ))}
           </div>
 
           {/* 검색 */}
