@@ -63,7 +63,6 @@ export default function ProfileSidebar() {
       {/* 네비게이션 */}
       <div className="bg-card border border-cream-400 rounded-lg overflow-hidden">
         {[
-          { href: '/', label: '🏠 홈' },
           { href: '/blog', label: '📝 블로그' },
         ].map(({ href, label }) => (
           <Link
