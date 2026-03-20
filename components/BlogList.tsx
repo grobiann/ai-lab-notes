@@ -129,7 +129,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
 
         <div className="flex gap-8 flex-col md:flex-row">
           {/* 좌측: 카테고리 목차 (md 이상에서 항상 표시, 모바일에서는 토글) */}
-          <aside className={`md:w-40 md:shrink-0 ${showCategories ? 'block' : 'hidden'} md:block`}>
+          <aside className={`md:w-40 md:shrink-0 md:mt-[52px] ${showCategories ? 'block' : 'hidden'} md:block`}>
             <div className="md:sticky md:top-20">
               <h3 className="font-bold text-sm text-ink-dark mb-3">카테고리</h3>
               <div className="space-y-1">
