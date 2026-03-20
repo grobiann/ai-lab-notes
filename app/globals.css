@@ -87,3 +87,31 @@ body {
   margin-top: 0.25em;
   margin-bottom: 0.25em;
 }
+
+/* prose blockquote 스타일 */
+.prose blockquote {
+  border-left: 4px solid #c07a2f;
+  padding-left: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  color: #7a6a52;
+  background-color: rgba(253, 243, 227, 0.5);
+  padding: 0.75em 1em;
+  border-radius: 0 4px 4px 0;
+}
+
+/* prose table 스타일 */
+.prose table {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.prose th {
+  background-color: #fdf3e3;
+  font-weight: 600;
+}
+
+.prose td {
+  vertical-align: top;
+}

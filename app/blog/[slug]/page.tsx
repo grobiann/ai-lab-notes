@@ -53,7 +53,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="bg-body min-h-screen py-8">
-      <article className="max-w-3xl mx-auto px-4">
+      <article className="max-w-4xl mx-auto px-4">
         {/* 뒤로가기 */}
         <div className="mb-6">
           <Link href="/blog" className="inline-flex items-center gap-1 text-xs text-ink-light hover:text-amber-warm transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm">
@@ -78,14 +78,16 @@ export default async function BlogPostPage({ params }: Props) {
           )}
 
           {/* 메타데이터 */}
-          <div className="flex flex-wrap items-center gap-4 text-xs text-ink-muted">
-            <time dateTime={post.published_at || post.created_at}>{dateStr}</time>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            <time dateTime={post.published_at || post.created_at} className="text-xs text-ink-muted">
+              {dateStr}
+            </time>
             {post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-amber-warm bg-amber-pale px-2.5 py-1 rounded-full font-medium"
+                    className="text-xs text-amber-warm bg-amber-pale px-2.5 py-1 rounded-full font-medium"
                   >
                     {tag}
                   </span>

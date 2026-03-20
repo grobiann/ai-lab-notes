@@ -27,11 +27,11 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
         className="flex gap-5 items-start px-5 py-4 bg-card border border-cream-400 hover:border-cream-500 rounded-lg transition-all hover:shadow-sm hover:bg-cream-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
       >
         <div className="flex-1 min-w-0">
-          <h2 className="font-semibold text-ink-dark mb-1 line-clamp-2">
+          <h2 className="font-semibold text-sm text-ink-dark mb-1 line-clamp-2 leading-snug">
             {post.title}
           </h2>
           {post.description && (
-            <p className="text-sm text-ink-light line-clamp-2 mb-2">
+            <p className="text-sm text-ink-light line-clamp-2 mb-2 leading-relaxed">
               {post.description}
             </p>
           )}

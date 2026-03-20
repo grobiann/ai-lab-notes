@@ -120,7 +120,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
             placeholder="제목·설명·태그로 검색..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-cream-400 rounded-lg text-sm focus:outline-2 focus:outline-amber-warm focus:outline-offset-1 bg-card"
+            className="w-full px-4 py-2.5 border border-cream-400 rounded-lg text-sm bg-card text-ink-dark placeholder-ink-muted transition-all focus:outline-2 focus:outline-amber-warm focus:outline-offset-1 focus:bg-cream-50"
           />
         </div>
 
@@ -135,7 +135,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
                   className={`w-full text-left text-xs px-3 py-2 rounded transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm ${
                     selectedCategory === null
                       ? 'bg-amber-pale text-amber-warm font-semibold'
-                      : 'text-ink-light hover:text-ink-dark'
+                      : 'text-ink-light hover:bg-cream-100 hover:text-ink-dark'
                   }`}
                 >
                   전체 ({posts.length})
