@@ -14,8 +14,6 @@ export async function POST(request: NextRequest) {
     await Promise.all([
       revalidatePath('/'),
       revalidatePath('/blog'),
-      revalidatePath('/projects'),
-      revalidatePath('/about'),
     ])
 
     return Response.json(

@@ -107,8 +107,6 @@ ai-lab-notes/
 │   ├── blog/
 │   │   ├── page.tsx               # /blog — 글 목록 (검색, 카테고리 필터)
 │   │   └── [slug]/page.tsx        # /blog/:slug — 글 상세
-│   ├── projects/page.tsx          # /projects — 포트폴리오
-│   ├── about/page.tsx             # /about — 소개 페이지
 │   ├── login/page.tsx             # /login — 어드민 로그인
 │   ├── admin/                      # 인증 보호 영역
 │   │   ├── layout.tsx             # 미로그인 → /login 리다이렉트

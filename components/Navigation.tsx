@@ -15,8 +15,6 @@ export default function Navigation() {
   const navLinks = [
     { href: '/', label: '홈' },
     { href: '/blog', label: 'Blog' },
-    { href: '/projects', label: 'Projects' },
-    { href: '/about', label: 'About' },
   ]
 
   return (
