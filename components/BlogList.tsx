@@ -107,7 +107,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* 상단 헤더 + 검색 */}
         <div className="mb-8">
-          <h1 className="font-bold text-4xl text-ink-dark mb-2">블로그</h1>
+          <h1 className="font-serif text-4xl sm:text-5xl font-black text-ink-dark mb-2">블로그</h1>
           <p className="text-ink-light text-sm mb-4">
             {filteredPosts.length !== posts.length
               ? `${filteredPosts.length} / 전체 ${posts.length}개`

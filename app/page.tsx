@@ -105,7 +105,7 @@ export default async function HomePage() {
       <div className="max-w-4xl mx-auto px-4 py-12">
         {/* 헤더: 페이지 제목 */}
         <div className="mb-12">
-          <h1 className="font-bold text-4xl text-ink-dark mb-3">최근 글</h1>
+          <h1 className="font-serif text-4xl sm:text-5xl font-black text-ink-dark mb-3">최근 글</h1>
           <p className="text-ink-light text-sm">
             {posts?.length ?? 0}개의 글이 있습니다
           </p>

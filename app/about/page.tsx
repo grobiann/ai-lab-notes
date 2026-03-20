@@ -60,7 +60,7 @@ export default function AboutPage() {
 
         {/* 기술 스택 */}
         <section className="mb-12">
-          <h2 className="font-serif text-xl font-bold text-ink-dark mb-4">Skills</h2>
+          <h2 className="font-serif text-2xl font-bold text-ink-dark mb-4">Skills</h2>
           <div className="flex flex-wrap gap-2">
             {skills.map((skill) => (
               <span
@@ -75,7 +75,7 @@ export default function AboutPage() {
 
         {/* 경력 */}
         <section className="mb-12">
-          <h2 className="font-serif text-xl font-bold text-ink-dark mb-6">Work Experience</h2>
+          <h2 className="font-serif text-2xl font-bold text-ink-dark mb-6">Work Experience</h2>
           <div className="flex flex-col gap-6">
             {experience.map((exp) => (
               <div key={exp.company} className="border-l-2 border-cream-400 pl-5">
@@ -92,7 +92,7 @@ export default function AboutPage() {
 
         {/* 학력 */}
         <section>
-          <h2 className="font-serif text-xl font-bold text-ink-dark mb-4">Education</h2>
+          <h2 className="font-serif text-2xl font-bold text-ink-dark mb-4">Education</h2>
           <div className="border-l-2 border-cream-400 pl-5">
             <span className="font-serif font-bold text-ink-dark">충남대학교 수학과</span>
             <span className="text-xs text-ink-muted ml-3">2011 – 2017</span>
