@@ -36,67 +36,69 @@ const experience = [
 
 export default function AboutPage() {
   return (
-    <div className="max-w-5xl mx-auto px-6 py-16">
-      {/* 헤더 */}
-      <div className="mb-14">
-        <h1 className="font-serif text-5xl font-black tracking-tight text-[#1a1208] mb-2">
-          장진석
-        </h1>
-        <p className="text-[#7a6a52] text-lg">5년차 게임 클라이언트 개발자</p>
-        <p className="text-sm text-[#b0977a] mt-1">grobiann0@gmail.com</p>
-      </div>
-
-      {/* 소개 */}
-      <section className="mb-12">
-        <p className="text-[#2c2416] leading-relaxed mb-3">
-          코드 품질과 팀 효율을 함께 챙기는 개발자입니다. 반복 업무를 자동화하고,
-          다른 직군이 더 빠르게 일할 수 있는 환경을 만드는 것을 좋아합니다.
-        </p>
-        <p className="text-[#2c2416] leading-relaxed">
-          최근에는 AI 도구와 웹 기술을 활용한 사이드 프로젝트를 이어가며 배운 것들을 이 블로그에 기록하고 있습니다.
-        </p>
-      </section>
-
-      {/* 기술 스택 */}
-      <section className="mb-12">
-        <h2 className="font-serif text-xl font-bold text-[#1a1208] mb-4">Skills</h2>
-        <div className="flex flex-wrap gap-2">
-          {skills.map((skill) => (
-            <span
-              key={skill}
-              className="text-sm text-[#7a6a52] bg-[#f5ead8] border border-[#e8ddd0] px-3 py-1 rounded-full"
-            >
-              {skill}
-            </span>
-          ))}
+    <div className="bg-body min-h-screen">
+      <div className="max-w-5xl mx-auto px-6 py-16">
+        {/* 헤더 */}
+        <div className="mb-14">
+          <h1 className="font-serif text-5xl font-black tracking-tight text-ink-dark mb-2">
+            장진석
+          </h1>
+          <p className="text-ink-light text-lg">5년차 게임 클라이언트 개발자</p>
+          <p className="text-sm text-ink-muted mt-1">grobiann0@gmail.com</p>
         </div>
-      </section>
 
-      {/* 경력 */}
-      <section className="mb-12">
-        <h2 className="font-serif text-xl font-bold text-[#1a1208] mb-6">Work Experience</h2>
-        <div className="flex flex-col gap-6">
-          {experience.map((exp) => (
-            <div key={exp.company} className="border-l-2 border-[#e8ddd0] pl-5">
-              <div className="flex flex-wrap items-baseline gap-x-3 mb-1">
-                <span className="font-serif font-bold text-[#1a1208]">{exp.company}</span>
-                <span className="text-xs text-[#b0977a]">{exp.period}</span>
+        {/* 소개 */}
+        <section className="mb-12">
+          <p className="text-ink-dark leading-relaxed mb-3">
+            코드 품질과 팀 효율을 함께 챙기는 개발자입니다. 반복 업무를 자동화하고,
+            다른 직군이 더 빠르게 일할 수 있는 환경을 만드는 것을 좋아합니다.
+          </p>
+          <p className="text-ink-dark leading-relaxed">
+            최근에는 AI 도구와 웹 기술을 활용한 사이드 프로젝트를 이어가며 배운 것들을 이 블로그에 기록하고 있습니다.
+          </p>
+        </section>
+
+        {/* 기술 스택 */}
+        <section className="mb-12">
+          <h2 className="font-serif text-xl font-bold text-ink-dark mb-4">Skills</h2>
+          <div className="flex flex-wrap gap-2">
+            {skills.map((skill) => (
+              <span
+                key={skill}
+                className="text-sm text-ink-light bg-cream-200 border border-cream-400 px-3 py-1 rounded-full"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        {/* 경력 */}
+        <section className="mb-12">
+          <h2 className="font-serif text-xl font-bold text-ink-dark mb-6">Work Experience</h2>
+          <div className="flex flex-col gap-6">
+            {experience.map((exp) => (
+              <div key={exp.company} className="border-l-2 border-cream-400 pl-5">
+                <div className="flex flex-wrap items-baseline gap-x-3 mb-1">
+                  <span className="font-serif font-bold text-ink-dark">{exp.company}</span>
+                  <span className="text-xs text-ink-muted">{exp.period}</span>
+                </div>
+                <p className="text-xs text-amber-warm mb-1">{exp.role}</p>
+                <p className="text-sm text-ink-light leading-relaxed">{exp.summary}</p>
               </div>
-              <p className="text-xs text-[#c07a2f] mb-1">{exp.role}</p>
-              <p className="text-sm text-[#7a6a52] leading-relaxed">{exp.summary}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      {/* 학력 */}
-      <section>
-        <h2 className="font-serif text-xl font-bold text-[#1a1208] mb-4">Education</h2>
-        <div className="border-l-2 border-[#e8ddd0] pl-5">
-          <span className="font-serif font-bold text-[#1a1208]">충남대학교 수학과</span>
-          <span className="text-xs text-[#b0977a] ml-3">2011 – 2017</span>
-        </div>
-      </section>
+        {/* 학력 */}
+        <section>
+          <h2 className="font-serif text-xl font-bold text-ink-dark mb-4">Education</h2>
+          <div className="border-l-2 border-cream-400 pl-5">
+            <span className="font-serif font-bold text-ink-dark">충남대학교 수학과</span>
+            <span className="text-xs text-ink-muted ml-3">2011 – 2017</span>
+          </div>
+        </section>
+      </div>
     </div>
   )
 }

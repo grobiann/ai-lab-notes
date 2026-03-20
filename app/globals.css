@@ -14,7 +14,7 @@ html {
 }
 
 body {
-  background-color: #f3f4f6;
+  background-color: #faf8f5;
   color: #2c2416;
 }
 
@@ -51,4 +51,39 @@ body {
 .prose blockquote::before,
 .prose blockquote::after {
   content: none !important;
+}
+
+/* prose 링크 스타일 */
+.prose a {
+  text-decoration: none;
+  border-bottom: 1px solid #c07a2f;
+  transition: all 0.2s ease;
+}
+
+.prose a:hover {
+  background-color: rgba(192, 122, 47, 0.1);
+  border-bottom-color: #e8a84e;
+}
+
+/* prose 헤딩 마진 조정 */
+.prose h2 {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.prose h3 {
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+}
+
+/* prose 리스트 스타일 개선 */
+.prose ul,
+.prose ol {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose li {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
 }

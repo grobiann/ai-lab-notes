@@ -88,10 +88,10 @@ export default function BlogList({ posts }: { posts: Post[] }) {
     <div key={node.path}>
       <button
         onClick={() => setSelectedCategory(node.path)}
-        className={`w-full text-left text-xs px-2 py-1.5 rounded transition-colors flex justify-between items-center ${
+        className={`w-full text-left text-xs px-2 py-1.5 rounded transition-colors flex justify-between items-center focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm ${
           selectedCategory === node.path
-            ? 'bg-[#c07a2f] text-white font-medium'
-            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            ? 'bg-amber-warm text-white font-medium'
+            : 'text-ink-light hover:bg-cream-100 hover:text-ink-dark'
         }`}
         style={{ paddingLeft: `${8 + depth * 12}px` }}
       >
@@ -103,12 +103,12 @@ export default function BlogList({ posts }: { posts: Post[] }) {
   )
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-body min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* 상단 헤더 + 검색 */}
         <div className="mb-8">
-          <h1 className="font-bold text-4xl text-gray-900 mb-2">블로그</h1>
-          <p className="text-gray-600 text-sm mb-4">
+          <h1 className="font-bold text-4xl text-ink-dark mb-2">블로그</h1>
+          <p className="text-ink-light text-sm mb-4">
             {filteredPosts.length !== posts.length
               ? `${filteredPosts.length} / 전체 ${posts.length}개`
               : `전체 ${posts.length}개`}
@@ -120,22 +120,22 @@ export default function BlogList({ posts }: { posts: Post[] }) {
             placeholder="제목·설명·태그로 검색..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#c07a2f] bg-white"
+            className="w-full px-4 py-2 border border-cream-400 rounded-lg text-sm focus:outline-2 focus:outline-amber-warm focus:outline-offset-1 bg-card"
           />
         </div>
 
-        <div className="flex gap-8">
-          {/* 좌측: 카테고리 목차 */}
-          <aside className="w-40 shrink-0">
-            <div className="sticky top-20">
-              <h3 className="font-bold text-sm text-gray-900 mb-3">카테고리</h3>
+        <div className="flex gap-8 flex-col md:flex-row">
+          {/* 좌측: 카테고리 목차 (md 이상에서 표시) */}
+          <aside className="md:w-40 md:shrink-0">
+            <div className="md:sticky md:top-20">
+              <h3 className="font-bold text-sm text-ink-dark mb-3">카테고리</h3>
               <div className="space-y-1">
                 <button
                   onClick={() => setSelectedCategory(null)}
-                  className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
+                  className={`w-full text-left text-xs px-3 py-2 rounded transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm ${
                     selectedCategory === null
-                      ? 'bg-gray-100 text-[#c07a2f] font-semibold'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-amber-pale text-amber-warm font-semibold'
+                      : 'text-ink-light hover:text-ink-dark'
                   }`}
                 >
                   전체 ({posts.length})
@@ -155,7 +155,7 @@ export default function BlogList({ posts }: { posts: Post[] }) {
               </div>
             ) : (
               <div className="py-16 text-center">
-                <p className="text-gray-400 text-sm">
+                <p className="text-ink-muted text-sm">
                   {searchQuery || selectedCategory ? '검색 결과가 없습니다.' : '아직 글이 없습니다.'}
                 </p>
               </div>

@@ -24,14 +24,14 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
     return (
       <Link
         href={`/blog/${post.slug}`}
-        className="flex gap-5 items-start px-5 py-4 bg-white border border-[#e8ddd0] hover:border-[#d4b896] rounded-lg transition-all hover:shadow-sm hover:bg-[#faf8f5]"
+        className="flex gap-5 items-start px-5 py-4 bg-card border border-cream-400 hover:border-cream-500 rounded-lg transition-all hover:shadow-sm hover:bg-cream-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
       >
         <div className="flex-1 min-w-0">
-          <h2 className="font-semibold text-[#1a1208] mb-1 line-clamp-2">
+          <h2 className="font-semibold text-ink-dark mb-1 line-clamp-2">
             {post.title}
           </h2>
           {post.description && (
-            <p className="text-sm text-[#7a6a52] line-clamp-2 mb-2">
+            <p className="text-sm text-ink-light line-clamp-2 mb-2">
               {post.description}
             </p>
           )}
@@ -40,18 +40,18 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
               {post.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"
+                  className="text-xs font-medium text-amber-warm bg-amber-pale px-2.5 py-1 rounded-full"
                 >
                   {tag}
                 </span>
               ))}
               {post.tags.length > 3 && (
-                <span className="text-xs text-[#b0977a] pt-1">+{post.tags.length - 3}</span>
+                <span className="text-xs text-ink-muted pt-1">+{post.tags.length - 3}</span>
               )}
             </div>
           )}
         </div>
-        <p className="text-xs text-[#b0977a] whitespace-nowrap shrink-0 pt-0.5">{dateStr}</p>
+        <p className="text-xs text-ink-muted whitespace-nowrap shrink-0 pt-0.5">{dateStr}</p>
       </Link>
     )
   }
@@ -61,12 +61,12 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
     return (
       <Link
         href={`/blog/${post.slug}`}
-        className="flex justify-between items-center p-3 border-b border-[#e8ddd0] hover:bg-[#faf8f5] transition-colors"
+        className="flex justify-between items-center p-3 border-b border-cream-300 hover:bg-cream-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
       >
-        <h2 className="font-notosans text-[#1a1208] truncate flex-1">
+        <h2 className="font-notosans text-ink-dark truncate flex-1">
           {post.title}
         </h2>
-        <p className="text-xs text-[#b0977a] ml-4 shrink-0">{dateStr}</p>
+        <p className="text-xs text-ink-muted ml-4 shrink-0">{dateStr}</p>
       </Link>
     )
   }
@@ -75,27 +75,27 @@ export default function PostCard({ post, mode = 'card' }: PostCardProps) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="block bg-white border border-[#e8ddd0] hover:border-[#d4b896] rounded-xl p-6 transition-all hover:shadow-sm"
+      className="block bg-card border border-cream-400 hover:border-cream-500 rounded-xl p-6 transition-all hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
     >
       <div className="flex flex-wrap gap-2 mb-3">
         {post.tags.map((tag) => (
           <span
             key={tag}
-            className="text-xs font-medium text-[#c07a2f] bg-[#fdf3e3] px-2.5 py-1 rounded-full"
+            className="text-xs font-medium text-amber-warm bg-amber-pale px-2.5 py-1 rounded-full"
           >
             {tag}
           </span>
         ))}
       </div>
-      <h2 className="font-semibold text-[#1a1208] mb-2 leading-snug">
+      <h2 className="font-semibold text-ink-dark mb-2 leading-snug">
         {post.title}
       </h2>
       {post.description && (
-        <p className="text-sm text-[#7a6a52] mb-4 line-clamp-2">
+        <p className="text-sm text-ink-light mb-4 line-clamp-2">
           {post.description}
         </p>
       )}
-      <p className="text-xs text-[#b0977a]">{dateStr}</p>
+      <p className="text-xs text-ink-muted">{dateStr}</p>
     </Link>
   )
 }

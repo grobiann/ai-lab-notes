@@ -20,11 +20,11 @@ export default function Navigation() {
   ]
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
+    <header className="bg-card border-b border-cream-400 sticky top-0 z-20">
       <nav className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link
           href="/"
-          className="font-bold text-lg text-gray-900 hover:text-[#c07a2f] transition-colors"
+          className="font-bold text-lg text-ink-dark hover:text-amber-warm transition-colors"
         >
           블로그
         </Link>
@@ -33,10 +33,10 @@ export default function Navigation() {
             <Link
               key={href}
               href={href}
-              className={`text-sm px-3 py-1.5 rounded-md transition-colors ${
+              className={`text-sm px-3 py-1.5 rounded-md transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm ${
                 isActive(href)
-                  ? 'text-[#c07a2f] font-semibold bg-orange-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  ? 'text-amber-warm font-semibold bg-amber-pale'
+                  : 'text-ink-light hover:text-ink-dark hover:bg-cream-100'
               }`}
             >
               {label}

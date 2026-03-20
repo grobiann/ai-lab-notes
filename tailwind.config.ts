@@ -14,6 +14,7 @@ const config: Config = {
           warm: '#c07a2f',
           light: '#e8a84e',
           pale: '#fdf3e3',
+          lighter: '#fef7f0',
         },
         ink: {
           dark: '#1a1208',
@@ -22,11 +23,17 @@ const config: Config = {
           muted: '#b0977a',
         },
         cream: {
+          50: '#faf8f5',
           100: '#faf5ec',
           200: '#f5ead8',
           300: '#ecdcc0',
+          400: '#e8ddd0',
           500: '#d4b896',
         },
+      },
+      backgroundColor: {
+        body: '#faf8f5',
+        card: '#ffffff',
       },
       fontFamily: {
         serif: ['var(--font-display)', 'Georgia', 'serif'],

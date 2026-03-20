@@ -5,7 +5,6 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import { createClient } from '@/lib/supabase/server'
-import ProfileSidebar from '@/components/ProfileSidebar'
 import type { Post } from '@/lib/types'
 
 type Props = {
@@ -53,92 +52,66 @@ export default async function BlogPostPage({ params }: Props) {
   const dateStr = post.published_at ? formatDate(post.published_at) : formatDate(post.created_at)
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <div className="flex gap-5">
-        {/* 좌측: 프로필 사이드바 */}
-        <ProfileSidebar />
+    <div className="bg-body min-h-screen py-8">
+      <article className="max-w-3xl mx-auto px-4">
+        {/* 뒤로가기 */}
+        <div className="mb-6">
+          <Link href="/blog" className="inline-flex items-center gap-1 text-xs text-ink-light hover:text-amber-warm transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm">
+            ← 블로그 목록
+          </Link>
+        </div>
 
-        {/* 가운데: 본문 */}
-        <article className="flex-1 min-w-0">
-          {/* 뒤로가기 */}
-          <div className="mb-4">
-            <Link href="/blog" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
-              ← 목록으로
-            </Link>
-          </div>
+        {/* 헤더 */}
+        <header className="mb-8 pb-8 border-b border-cream-400">
+          {post.category && (
+            <p className="text-xs font-semibold text-amber-warm mb-3 uppercase tracking-wider">{post.category}</p>
+          )}
 
-          <div className="bg-white border border-gray-200 rounded-lg p-8">
-            {/* 헤더 */}
-            <header className="mb-8">
-              {post.category && (
-                <p className="text-xs font-medium text-[#c07a2f] mb-2">{post.category}</p>
-              )}
-              <h1 className="font-bold text-2xl text-gray-900 leading-snug mb-3">
-                {post.title}
-              </h1>
-              {post.description && (
-                <p className="text-sm text-gray-500 mb-3">{post.description}</p>
-              )}
-              <p className="text-xs text-gray-400">{dateStr}</p>
-            </header>
+          <h1 className="font-bold text-4xl text-ink-dark leading-snug mb-4">
+            {post.title}
+          </h1>
 
-            <hr className="border-gray-100 mb-8" />
+          {post.description && (
+            <p className="text-lg text-ink-light mb-4 leading-relaxed">
+              {post.description}
+            </p>
+          )}
 
-            {/* 본문 */}
-            <div className="prose prose-warm max-w-none prose-sm">
-              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
-                {post.content}
-              </ReactMarkdown>
-            </div>
-          </div>
-        </article>
-
-        {/* 우측: 메타 정보 */}
-        <aside className="w-44 shrink-0">
-          <div className="bg-white border border-gray-200 rounded-lg p-4 sticky top-20">
-            <h3 className="font-bold text-sm text-gray-900 mb-3">글 정보</h3>
-
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs text-gray-400 mb-1">작성일</p>
-                <p className="text-xs text-gray-700">{dateStr}</p>
+          {/* 메타데이터 */}
+          <div className="flex flex-wrap items-center gap-4 text-xs text-ink-muted">
+            <time dateTime={post.published_at || post.created_at}>{dateStr}</time>
+            {post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-amber-warm bg-amber-pale px-2.5 py-1 rounded-full font-medium"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
-
-              {post.category && (
-                <div>
-                  <p className="text-xs text-gray-400 mb-1">카테고리</p>
-                  <p className="text-xs text-[#c07a2f]">{post.category}</p>
-                </div>
-              )}
-
-              {post.tags.length > 0 && (
-                <div>
-                  <p className="text-xs text-gray-400 mb-2">태그</p>
-                  <div className="flex flex-wrap gap-1">
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs text-[#c07a2f] bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <hr className="border-gray-100 my-4" />
-
-            <Link
-              href="/blog"
-              className="block text-center text-xs text-gray-500 hover:text-[#c07a2f] transition-colors"
-            >
-              ← 목록으로
-            </Link>
+            )}
           </div>
-        </aside>
-      </div>
+        </header>
+
+        {/* 본문 */}
+        <div className="prose prose-warm max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+            {post.content}
+          </ReactMarkdown>
+        </div>
+
+        {/* 하단 네비게이션 */}
+        <div className="mt-16 pt-8 border-t border-cream-400">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-1 text-sm text-amber-warm hover:text-amber-light transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm font-medium"
+          >
+            ← 블로그 목록으로
+          </Link>
+        </div>
+      </article>
     </div>
   )
 }
