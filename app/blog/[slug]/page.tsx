@@ -1,10 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeHighlight from 'rehype-highlight'
 import { createClient } from '@/lib/supabase/server'
+import BlogContent from './BlogContent'
 import type { Post } from '@/lib/types'
 
 type Props = {
@@ -53,18 +51,23 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="bg-body min-h-screen py-8">
-      <article className="max-w-4xl mx-auto px-4">
+      <div className="max-w-5xl mx-auto px-4">
         {/* 뒤로가기 */}
         <div className="mb-6">
-          <Link href="/blog" className="inline-flex items-center gap-1 text-xs text-ink-light hover:text-amber-warm transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-1 text-xs text-ink-light hover:text-amber-warm transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
+          >
             ← 블로그 목록
           </Link>
         </div>
 
         {/* 헤더 */}
-        <header className="mb-8 pb-8 border-b border-cream-400">
+        <header className="mb-12 pb-8 border-b border-cream-400">
           {post.category && (
-            <p className="text-xs font-semibold text-amber-warm mb-3 uppercase tracking-wider">{post.category}</p>
+            <p className="text-xs font-semibold text-amber-warm mb-3 uppercase tracking-wider">
+              {post.category}
+            </p>
           )}
 
           <h1 className="font-bold text-3xl sm:text-4xl text-ink-dark leading-snug mb-4">
@@ -97,12 +100,8 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </header>
 
-        {/* 본문 */}
-        <div className="prose prose-warm max-w-none">
-          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
-            {post.content}
-          </ReactMarkdown>
-        </div>
+        {/* 본문 + TOC */}
+        <BlogContent post={post} />
 
         {/* 하단 네비게이션 */}
         <div className="mt-16 pt-8 border-t border-cream-400">
@@ -113,7 +112,7 @@ export default async function BlogPostPage({ params }: Props) {
             ← 블로그 목록으로
           </Link>
         </div>
-      </article>
+      </div>
     </div>
   )
 }

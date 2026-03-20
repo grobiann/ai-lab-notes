@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { supabasePublic } from '@/lib/supabase/public'
 import PostCard from '@/components/PostCard'
-import ProfileSidebar from '@/components/ProfileSidebar'
 import type { Post } from '@/lib/types'
 
 export const revalidate = 3600
@@ -102,69 +101,66 @@ export default async function HomePage() {
   )
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <div className="flex gap-5 flex-col md:flex-row">
-        {/* 좌측: 프로필 사이드바 (md 이상에서 고정) */}
-        <div className="md:w-52 md:shrink-0">
-          <ProfileSidebar />
+    <div className="bg-body min-h-screen">
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        {/* 헤더: 페이지 제목 */}
+        <div className="mb-12">
+          <h1 className="font-bold text-4xl text-ink-dark mb-3">최근 글</h1>
+          <p className="text-ink-light text-sm">
+            {posts?.length ?? 0}개의 글이 있습니다
+          </p>
         </div>
 
-        {/* 가운데: 최근 글 */}
-        <main className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-ink-dark">최근 글</h2>
-            <Link
-              href="/blog"
-              className="text-xs text-amber-warm hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
-            >
-              전체 보기→
-            </Link>
-          </div>
-
-          {posts && posts.length > 0 ? (
-            <div className="flex flex-col gap-2">
-              {posts.map((post) => (
-                <PostCard key={post.id} post={post} mode="compact" />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-card border border-cream-400 rounded-lg p-8 text-center">
-              <p className="text-ink-muted text-sm">아직 글이 없습니다.</p>
-            </div>
-          )}
-        </main>
-
-        {/* 우측: 카테고리 (md 이상에서 표시) */}
-        <aside className="md:w-44 md:shrink-0">
-          <div className="bg-card border border-cream-400 rounded-lg p-4 mb-3">
-            <h3 className="font-bold text-sm text-ink-dark mb-3">카테고리</h3>
-            <Link
-              href="/blog"
-              className="flex justify-between items-center text-xs text-ink-light hover:text-amber-warm py-1 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
-            >
-              <span>전체</span>
-              <span className="text-ink-muted">({totalPosts})</span>
-            </Link>
-            {categoryTree.length > 0 ? (
-              <div className="mt-1 space-y-0.5">
-                {categoryTree.map((node) => renderNode(node))}
+        <div className="flex gap-8 flex-col lg:flex-row">
+          {/* 중앙: 최근 글 목록 */}
+          <main className="flex-1 min-w-0">
+            {posts && posts.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                {posts.map((post) => (
+                  <PostCard key={post.id} post={post} mode="list" />
+                ))}
               </div>
             ) : (
-              <p className="text-xs text-ink-muted mt-2">카테고리 없음</p>
+              <div className="bg-card border border-cream-400 rounded-lg p-12 text-center">
+                <p className="text-ink-muted text-sm">아직 글이 없습니다.</p>
+              </div>
             )}
-          </div>
 
-          {/* 태그 바로가기 */}
-          <div className="bg-card border border-cream-400 rounded-lg p-4">
-            <h3 className="font-bold text-sm text-ink-dark mb-2">바로가기</h3>
-            <Link href="/projects" className="block text-xs text-ink-light hover:text-amber-warm py-1 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm">
-              🗂 프로젝트
-            </Link>
-            <Link href="/about" className="block text-xs text-ink-light hover:text-amber-warm py-1 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm">
-              👤 소개
-            </Link>
-          </div>
-        </aside>
+            {/* 전체 보기 버튼 */}
+            {posts && posts.length > 0 && (
+              <div className="mt-8 text-center">
+                <Link
+                  href="/blog"
+                  className="inline-flex items-center gap-2 px-6 py-2 bg-amber-pale text-amber-warm hover:bg-amber-light hover:text-white transition-all rounded-lg font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-warm"
+                >
+                  전체 글 보기
+                  <span>→</span>
+                </Link>
+              </div>
+            )}
+          </main>
+
+          {/* 우측: 카테고리 (lg 이상에서 표시) */}
+          <aside className="lg:w-56 lg:shrink-0">
+            <div className="bg-card border border-cream-400 rounded-lg p-4 sticky top-20">
+              <h3 className="font-bold text-sm text-ink-dark mb-3">카테고리</h3>
+              <Link
+                href="/blog"
+                className="flex justify-between items-center text-xs text-ink-light hover:text-amber-warm py-1 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
+              >
+                <span>전체</span>
+                <span className="text-ink-muted">({totalPosts})</span>
+              </Link>
+              {categoryTree.length > 0 ? (
+                <div className="mt-1 space-y-0.5">
+                  {categoryTree.map((node) => renderNode(node))}
+                </div>
+              ) : (
+                <p className="text-xs text-ink-muted mt-2">카테고리 없음</p>
+              )}
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   )
