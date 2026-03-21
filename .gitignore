@@ -34,3 +34,6 @@ next-env.d.ts
 
 # Claude 로컬 개인 설정 (공유 안 함)
 CLAUDE.local.md
+
+# 테스트/스크립트 파일 (로컬에서만 사용)
+check-post.js
