@@ -1,17 +1,12 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getAllProjects } from '@/lib/dynamo'
 import type { Project } from '@/lib/types'
 
 export default async function AdminProjectsPage() {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('projects')
-    .select('*')
-    .order('display_order', { ascending: true })
-  const projects = data as Project[] | null
+  const projects = await getAllProjects()
 
-  const work = projects?.filter((p) => p.type === 'work') ?? []
-  const personal = projects?.filter((p) => p.type === 'personal') ?? []
+  const work = projects.filter((p) => p.type === 'work')
+  const personal = projects.filter((p) => p.type === 'personal')
 
   function Section({ title, items }: { title: string; items: Project[] }) {
     return (

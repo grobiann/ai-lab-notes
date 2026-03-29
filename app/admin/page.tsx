@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
-import type { Post } from '@/lib/types'
+import { getAllPosts } from '@/lib/dynamo'
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('ko-KR', {
@@ -11,15 +10,10 @@ function formatDate(dateStr: string) {
 }
 
 export default async function AdminPage() {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('posts')
-    .select('*')
-    .order('created_at', { ascending: false })
-  const posts = data as Post[] | null
+  const posts = await getAllPosts()
 
-  const published = posts?.filter((p) => p.is_published).length ?? 0
-  const drafts = (posts?.length ?? 0) - published
+  const published = posts.filter((p) => p.is_published).length
+  const drafts = posts.length - published
 
   return (
     <div>
@@ -40,7 +34,7 @@ export default async function AdminPage() {
         </Link>
       </div>
 
-      {posts && posts.length > 0 ? (
+      {posts.length > 0 ? (
         <div className="space-y-2">
           {posts.map((post) => (
             <div

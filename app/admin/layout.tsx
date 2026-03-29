@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getSession } from '@/lib/session'
 import AdminNav from './AdminNav'
 
 export default async function AdminLayout({
@@ -7,12 +7,8 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
+  const session = await getSession()
+  if (!session) redirect('/login')
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">

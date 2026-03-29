@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getPostBySlug } from '@/lib/dynamo'
 import BlogContent from './BlogContent'
-import type { Post } from '@/lib/types'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -11,13 +10,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const supabase = await createClient()
-  const { data: post } = await supabase
-    .from('posts')
-    .select('title, description')
-    .eq('slug', slug)
-    .eq('is_published', true)
-    .single()
+  const post = await getPostBySlug(slug)
 
   if (!post) return { title: '글을 찾을 수 없습니다' }
   return {
@@ -36,15 +29,7 @@ function formatDate(dateStr: string) {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('slug', slug)
-    .eq('is_published', true)
-    .single()
-  const post = data as Post | null
-
+  const post = await getPostBySlug(slug)
   if (!post) notFound()
 
   const dateStr = post.published_at ? formatDate(post.published_at) : formatDate(post.created_at)
@@ -80,7 +65,6 @@ export default async function BlogPostPage({ params }: Props) {
             </p>
           )}
 
-          {/* 메타데이터 */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <time dateTime={post.published_at || post.created_at} className="text-xs text-ink-muted">
               {dateStr}

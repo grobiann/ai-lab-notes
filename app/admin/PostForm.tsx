@@ -2,8 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { revalidateBlog } from '@/lib/actions'
+import { createPost, updatePost, deletePost } from '@/lib/post-actions'
 import type { Post } from '@/lib/types'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -150,20 +149,21 @@ export default function PostForm({ post }: { post?: Post }) {
     }
     setError('')
     setUploading(true)
-    const supabase = createClient()
-    const ext = file.name.split('.').pop()
-    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-    const { error: uploadError } = await supabase.storage
-      .from('blog-images')
-      .upload(fileName, file, { cacheControl: '3600', upsert: false })
-    if (uploadError) {
-      setError(`이미지 업로드 실패: ${uploadError.message}`)
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const res = await fetch('/api/upload', { method: 'POST', body: formData })
+    const data = await res.json()
+
+    if (!res.ok) {
+      setError(data.error ?? '이미지 업로드 실패')
       setUploading(false)
       return
     }
-    const { data } = supabase.storage.from('blog-images').getPublicUrl(fileName)
+
     const altText = file.name.replace(/\.[^.]+$/, '')
-    insertAtCursor(`![${altText}](${data.publicUrl})`)
+    insertAtCursor(`![${altText}](${data.url})`)
     setUploading(false)
   }
 
@@ -197,7 +197,7 @@ export default function PostForm({ post }: { post?: Post }) {
     }
     setError('')
     setLoading(true)
-    const supabase = createClient()
+
     const tagArray = tags.split(',').map((t) => t.trim()).filter(Boolean)
     const payload = {
       title: title.trim(),
@@ -210,32 +210,33 @@ export default function PostForm({ post }: { post?: Post }) {
       published_at: publish ? (post?.published_at ?? new Date().toISOString()) : null,
       updated_at: new Date().toISOString(),
     }
-    let err
-    if (isEdit) {
-      const result = await supabase.from('posts').update(payload).eq('id', post.id)
-      err = result.error
-    } else {
-      const result = await supabase.from('posts').insert(payload)
-      err = result.error
-    }
-    if (err) {
-      setError(err.message)
+
+    try {
+      if (isEdit) {
+        await updatePost(post.id, payload)
+      } else {
+        await createPost(payload)
+      }
+      setIsPublished(publish)
+      router.push('/admin')
+      router.refresh()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '저장 실패')
       setLoading(false)
-      return
     }
-    await revalidateBlog()
-    router.push('/admin')
-    router.refresh()
   }
 
   async function handleDelete() {
     if (!post || !confirm('정말 삭제하시겠습니까?')) return
     setLoading(true)
-    const supabase = createClient()
-    await supabase.from('posts').delete().eq('id', post.id)
-    await revalidateBlog()
-    router.push('/admin')
-    router.refresh()
+    try {
+      await deletePost(post.id)
+      router.push('/admin')
+      router.refresh()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '삭제 실패')
+      setLoading(false)
+    }
   }
 
   const editorArea = (

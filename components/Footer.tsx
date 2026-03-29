@@ -8,7 +8,7 @@ export default function Footer() {
           © {new Date().getFullYear()} grobiann · AI Lab Notes
         </p>
         <Link
-          href="/private"
+          href="/admin"
           className="text-xs text-cream-500 hover:text-ink-muted transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-amber-warm"
         >
           admin

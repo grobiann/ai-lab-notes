@@ -70,7 +70,9 @@ middleware.ts                  # /admin 접근 인증 체크
 ## 핵심 설정
 
 - **프레임워크**: Next.js 15 (App Router)
-- **DB + Auth**: Supabase (PostgreSQL + Row Level Security)
+- **DB**: AWS DynamoDB (`lib/dynamo.ts` — `@aws-sdk/lib-dynamodb`)
+- **Auth**: NextAuth.js v4 Credentials Provider (`lib/auth.ts`)
+- **이미지 저장**: AWS S3 (`lib/s3.ts` — `@aws-sdk/client-s3`)
 - **호스팅**: Vercel (push → 자동 배포, 서버 불필요)
 - **배포 트리거**: `main` 브랜치 push → Vercel 자동 빌드
 

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getPostById } from '@/lib/dynamo'
 import PostForm from '../../PostForm'
 
 type Props = {
@@ -8,13 +8,7 @@ type Props = {
 
 export default async function EditPostPage({ params }: Props) {
   const { id } = await params
-  const supabase = await createClient()
-  const { data: post } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('id', id)
-    .single()
-
+  const post = await getPostById(id)
   if (!post) notFound()
 
   return (

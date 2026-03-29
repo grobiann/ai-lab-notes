@@ -26,26 +26,3 @@ export type Project = {
   created_at: string
   updated_at: string
 }
-
-export type Database = {
-  public: {
-    Tables: {
-      posts: {
-        Row: Post
-        Insert: Omit<Post, 'id' | 'created_at' | 'updated_at'>
-        Update: Partial<Omit<Post, 'id' | 'created_at'>>
-        Relationships: []
-      }
-      projects: {
-        Row: Project
-        Insert: Omit<Project, 'id' | 'created_at' | 'updated_at'>
-        Update: Partial<Omit<Project, 'id' | 'created_at'>>
-        Relationships: []
-      }
-    }
-    Views: { [_ in never]: never }
-    Functions: { [_ in never]: never }
-    Enums: { [_ in never]: never }
-    CompositeTypes: { [_ in never]: never }
-  }
-}

@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { revalidateProjects } from '@/lib/actions'
+import { createProject, updateProject, deleteProject } from '@/lib/project-actions'
 import type { Project } from '@/lib/types'
 
 type Props = {
@@ -37,7 +36,6 @@ export default function ProjectForm({ project }: Props) {
     }
     setSaving(true)
     setError('')
-    const supabase = createClient()
     const payload = {
       title: title.trim(),
       company: company.trim() || null,
@@ -51,30 +49,31 @@ export default function ProjectForm({ project }: Props) {
       updated_at: new Date().toISOString(),
     }
 
-    let err
-    if (isEdit) {
-      ;({ error: err } = await supabase.from('projects').update(payload).eq('id', project.id))
-    } else {
-      ;({ error: err } = await supabase.from('projects').insert(payload))
+    try {
+      if (isEdit) {
+        await updateProject(project.id, payload)
+      } else {
+        await createProject(payload)
+      }
+      router.push('/admin/projects')
+      router.refresh()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '저장 실패')
+      setSaving(false)
     }
-
-    setSaving(false)
-    if (err) { setError(err.message); return }
-    await revalidateProjects()
-    router.push('/admin/projects')
-    router.refresh()
   }
 
   async function handleDelete() {
     if (!confirm('정말 삭제하시겠습니까?')) return
     setDeleting(true)
-    const supabase = createClient()
-    const { error: err } = await supabase.from('projects').delete().eq('id', project!.id)
-    setDeleting(false)
-    if (err) { setError(err.message); return }
-    await revalidateProjects()
-    router.push('/admin/projects')
-    router.refresh()
+    try {
+      await deleteProject(project!.id)
+      router.push('/admin/projects')
+      router.refresh()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '삭제 실패')
+      setDeleting(false)
+    }
   }
 
   const inputClass =
