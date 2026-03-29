@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
+import rehypeRaw from 'rehype-raw'
 import type { Post } from '@/lib/types'
 
 interface HeadingItem {
@@ -68,7 +69,7 @@ export default function BlogContent({ post }: { post: Post }) {
       {/* 좌측: 본문 */}
       <article className="flex-1 min-w-0">
         <div className="prose prose-warm max-w-none">
-          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]} components={components}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, rehypeHighlight]} components={components}>
             {post.content}
           </ReactMarkdown>
         </div>

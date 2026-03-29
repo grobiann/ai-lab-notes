@@ -7,6 +7,7 @@ import type { Post } from '@/lib/types'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
+import rehypeRaw from 'rehype-raw'
 
 type ViewMode = 'edit' | 'split' | 'preview'
 
@@ -29,7 +30,7 @@ function formatDate(date: Date) {
 
 function MarkdownPreview({ content }: { content: string }) {
   return content ? (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, rehypeHighlight]}>
       {content}
     </ReactMarkdown>
   ) : (

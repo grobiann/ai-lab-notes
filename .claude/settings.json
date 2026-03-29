@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node scripts/fetch-post.mjs vat)"
+      "Bash(node scripts/fetch-post.mjs vat)",
+      "Bash(node scripts/fetch-post.mjs vertex)",
+      "Bash(npm install:*)",
+      "Bash(npm list:*)"
     ]
   }
 }
